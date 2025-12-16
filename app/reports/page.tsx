@@ -16,12 +16,15 @@ export default function AdminPage(): React.ReactElement {
     style.textContent = `
       @media print {
         @page {
-          size: A4 portrait;
-          margin: 12mm 8mm 12mm 8mm;
+          size: A4 landscape;
+          margin: 8mm 6mm 8mm 6mm;
         }
         * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+        body, html {
+          background: white !important;
         }
         .print\\:hidden { display: none !important; }
         .page-shell { 
@@ -30,26 +33,30 @@ export default function AdminPage(): React.ReactElement {
           width: 100%;
           max-width: none;
           font-family: Arial, sans-serif;
+          background: white !important;
         }
         header { 
-          margin-bottom: 10px; 
+          display: block !important;
+          margin-bottom: 6px; 
           text-align: center;
           page-break-after: avoid;
         }
         h1 { 
-          font-size: 16px; 
-          margin: 0 0 8px 0; 
+          display: block !important;
+          font-size: 14px; 
+          margin: 0 0 4px 0; 
           font-weight: bold;
-          line-height: 1.2;
+          line-height: 1.1;
         }
         h3 { 
-          font-size: 11px; 
-          margin: 4px 0; 
+          display: block !important;
+          font-size: 9px; 
+          margin: 2px 0; 
           font-weight: normal;
-          line-height: 1.2;
+          line-height: 1.1;
         }
         section {
-          margin: 5px 0;
+          margin: 3px 0;
           page-break-inside: avoid;
         }
         .data-card { 
@@ -63,82 +70,68 @@ export default function AdminPage(): React.ReactElement {
           width: 100%;
         }
         table.k-table { 
-          font-size: 7px !important;
+          font-size: 6px !important;
           width: 100%;
           border-collapse: collapse;
           margin: 0;
-          table-layout: fixed;
+          table-layout: auto;
         }
         .k-table th { 
-          padding: 2px 1px !important; 
-          font-size: 6px !important;
+          padding: 3px 5px !important; 
+          font-size: 7px !important;
           font-weight: bold;
-          text-align: center;
+          text-align: center !important;
           border: 0.5px solid #333 !important;
-          background: #f0f0f0 !important;
-          line-height: 1.1;
-          word-wrap: break-word;
+          background: white !important;
+          line-height: 1.2;
+          white-space: nowrap;
+          min-width: 35px;
         }
         .k-table td { 
-          padding: 1px 2px !important; 
+          padding: 2px 4px !important; 
           font-size: 6px !important;
           border: 0.5px solid #333 !important;
-          text-align: right;
-          line-height: 1.1;
-          word-wrap: break-word;
-          overflow: hidden;
+          text-align: center !important;
+          line-height: 1.2;
+          white-space: nowrap;
+          overflow: visible;
         }
         .k-table td:nth-child(1),
         .k-table td:nth-child(2),
         .k-table td:nth-child(3) {
-          text-align: left;
+          text-align: left !important;
           font-size: 5px !important;
+          white-space: nowrap;
         }
         .k-table thead th {
-          height: 20px;
+          height: auto;
           vertical-align: middle;
+          white-space: nowrap;
         }
         .k-table tbody tr {
-          height: 12px;
+          height: auto;
           page-break-inside: avoid;
         }
         .k-table tbody tr:nth-child(even) {
-          background: #f8f8f8 !important;
+          background: white !important;
         }
         .k-table tbody tr:last-child {
-          background: #e0e0e0 !important;
+          background: white !important;
           font-weight: bold !important;
           border-top: 2px solid #000 !important;
         }
         .k-table tbody tr:last-child td {
-          font-size: 7px !important;
+          font-size: 6px !important;
           font-weight: bold !important;
-          padding: 2px !important;
+          padding: 2px 4px !important;
         }
         .k-table td:last-child {
-          background: #e8f5e8 !important;
-          color: #166534 !important;
+          background: white !important;
+          color: #000 !important;
           font-weight: bold !important;
+          white-space: nowrap;
         }
-        /* Column widths optimization for A4 */
-        .k-table th:nth-child(1), .k-table td:nth-child(1) { width: 8%; }  /* Time */
-        .k-table th:nth-child(2), .k-table td:nth-child(2) { width: 6%; }  /* Device */
-        .k-table th:nth-child(3), .k-table td:nth-child(3) { width: 6%; }  /* Site */
-        .k-table th:nth-child(4), .k-table td:nth-child(4) { width: 5%; }  /* Before kWh */
-        .k-table th:nth-child(5), .k-table td:nth-child(5) { width: 4%; }  /* Before P */
-        .k-table th:nth-child(6), .k-table td:nth-child(6) { width: 4%; }  /* Before Q */
-        .k-table th:nth-child(7), .k-table td:nth-child(7) { width: 4%; }  /* Before S */
-        .k-table th:nth-child(8), .k-table td:nth-child(8) { width: 4%; }  /* Before PF */
-        .k-table th:nth-child(9), .k-table td:nth-child(9) { width: 4%; }  /* Before THD */
-        .k-table th:nth-child(10), .k-table td:nth-child(10) { width: 4%; } /* Before F */
-        .k-table th:nth-child(11), .k-table td:nth-child(11) { width: 5%; } /* Metrics kWh */
-        .k-table th:nth-child(12), .k-table td:nth-child(12) { width: 4%; } /* Metrics P */
-        .k-table th:nth-child(13), .k-table td:nth-child(13) { width: 4%; } /* Metrics Q */
-        .k-table th:nth-child(14), .k-table td:nth-child(14) { width: 4%; } /* Metrics S */
-        .k-table th:nth-child(15), .k-table td:nth-child(15) { width: 4%; } /* Metrics PF */
-        .k-table th:nth-child(16), .k-table td:nth-child(16) { width: 4%; } /* Metrics THD */
-        .k-table th:nth-child(17), .k-table td:nth-child(17) { width: 4%; } /* Metrics F */
-        .k-table th:nth-child(18), .k-table td:nth-child(18) { width: 8%; } /* ER */
+        /* Remove fixed column widths for auto-sizing */
       }
     `
     document.head.appendChild(style)
@@ -323,27 +316,33 @@ export default function AdminPage(): React.ReactElement {
 
       trs.push(
         <tr key={i} style={{ borderTop: '1px solid #f1f5f9' }}>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{r.time ? new Date(r.time).toLocaleString() : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{r.device || r.ksave || '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{r.location || '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'left' }}>{r.time ? new Date(r.time).toLocaleString() : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'left' }}>{r.device || r.ksave || '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'left' }}>{r.location || '-'}</td>
 
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_kWh) ? b_kWh.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_P) ? b_P.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_Q) ? b_Q.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_S) ? b_S.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_PF) ? b_PF.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_THD) ? b_THD.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(b_F) ? b_F.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_kWh) ? b_kWh.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_P) ? b_P.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_Q) ? b_Q.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_S) ? b_S.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_PF) ? b_PF.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_THD) ? b_THD.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(b_F) ? b_F.toFixed(3) : '-'}</td>
 
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_kWh) ? m_kWh.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_P) ? m_P.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_Q) ? m_Q.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_S) ? m_S.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_PF) ? m_PF.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_THD) ? m_THD.toFixed(3) : '-'}</td>
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right' }}>{Number.isFinite(m_F) ? m_F.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>-</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_kWh) ? m_kWh.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_P) ? m_P.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_Q) ? m_Q.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_S) ? m_S.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_PF) ? m_PF.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_THD) ? m_THD.toFixed(3) : '-'}</td>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center' }}>{Number.isFinite(m_F) ? m_F.toFixed(3) : '-'}</td>
 
-          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'right', background: '#f0fdf4', color: '#166534', fontWeight: 'bold' }}>
+          <td style={{ border: '1px solid #e5e7eb', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>
             {Number.isFinite(energyReduction) && energyReduction > 0 ? 
               `${(energyReduction * 0.5135).toFixed(4)} kgCO₂` : '-'}
           </td>
@@ -355,58 +354,64 @@ export default function AdminPage(): React.ReactElement {
     const cnt = totals.count || 1
     const avg = (v: number) => (cnt ? (v / cnt) : 0)
     trs.push(
-      <tr key="totals" style={{ borderTop: '3px solid #2563eb', background: '#f0f9ff', fontWeight: 700, fontSize: '14px' }}>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, background: '#dbeafe', color: '#1e40af' }}>
+      <tr key="totals" style={{ borderTop: '2px solid #000', fontWeight: 700, fontSize: '14px' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>TOTAL ({cnt})</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, background: '#dbeafe' }}></td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, background: '#dbeafe' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10 }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10 }}></td>
 
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fef3c7', color: '#92400e' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.b_kWh.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fef3c7', color: '#92400e' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.b_P.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fef3c7', color: '#92400e' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.b_Q.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fef3c7', color: '#92400e' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.b_S.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#e0f2fe', color: '#0369a1' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.b_PF).toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#e0f2fe', color: '#0369a1' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.b_THD).toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#e0f2fe', color: '#0369a1' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.b_F).toFixed(3)}</strong>
         </td>
 
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#dcfce7', color: '#166534' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}></td>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.m_kWh.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#dcfce7', color: '#166534' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.m_P.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#dcfce7', color: '#166534' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.m_Q.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#dcfce7', color: '#166534' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{totals.m_S.toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fce7f3', color: '#be185d' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.m_PF).toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fce7f3', color: '#be185d' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.m_THD).toFixed(3)}</strong>
         </td>
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#fce7f3', color: '#be185d' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{avg(totals.m_F).toFixed(3)}</strong>
         </td>
 
-        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'right', background: '#f0fdf4', color: '#166534' }}>
+        <td style={{ border: '1px solid #e5e7eb', padding: 10, textAlign: 'center' }}>
           <strong>{(totals.totalER * 0.5135).toFixed(4)} kgCO₂</strong>
         </td>
       </tr>
@@ -417,11 +422,9 @@ export default function AdminPage(): React.ReactElement {
 
   return (
     <div className="page-shell">
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
-        <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-          <h1>Reports Carbon Credit</h1>
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 'auto' }} className="print:hidden">
+      <header style={{ textAlign: 'center', position: 'relative' }}>
+        <h1>Reports Carbon Credit</h1>
+        <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', gap: 8, alignItems: 'center' }} className="print:hidden">
           <button 
             className="k-btn k-btn-secondary crisp-text" 
             onClick={() => window.print()}
@@ -439,7 +442,7 @@ export default function AdminPage(): React.ReactElement {
 
                   <section style={{ marginTop: 18 }}>
         <h3>Company Name: K Energy Save co.,Ltd </h3>
-        <h3>Address: 123 Energy Saving St., Seoul, Republic of Korea</h3>
+        <h3>Address: 1114,27 Dunchon-daero 457beon-gil, Jungwon-gu, Seongnam-si, Gyeonggi-do, Republic of korea</h3>
          <h3>Date: {new Date().toLocaleString()}</h3> 
       </section>
 
@@ -449,7 +452,7 @@ export default function AdminPage(): React.ReactElement {
             <h3 style={{ margin: 0 }}>
               Data Collection Period
               <br />
-              <span style={{ fontSize: '16px', color: '#374151', fontWeight: 'bold' }}>
+              <span style={{ fontSize: '12px', color: '#374151', fontWeight: 'normal' }}>
                 Period: {startAt && endAt ? 
                   `${new Date(startAt).toLocaleString()} - ${new Date(endAt).toLocaleString()}` : 
                   `Last ${selectedRange.replace('-', '').replace('h', ' hour').replace('d', ' day').replace('m', ' minute')}`
@@ -518,19 +521,25 @@ export default function AdminPage(): React.ReactElement {
             <table className="k-table">
             <thead style={{ background: '#f8fafc' }}>
               <tr>
-                <th rowSpan={2} style={{ padding: 8, textAlign: 'left', border: '1px solid #e5e7eb' }}>Time</th>
-                <th rowSpan={2} style={{ padding: 8, textAlign: 'left', border: '1px solid #e5e7eb' }}>Device</th>
-                <th rowSpan={2} style={{ padding: 8, textAlign: 'left', border: '1px solid #e5e7eb' }}>Site</th>
-                <th colSpan={7} className="power-group-header" style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Power (before)</th>
-                <th colSpan={7} className="power-group-header" style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Power (metrics)</th>
+                <th rowSpan={2} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Time</th>
+                <th rowSpan={2} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Device</th>
+                <th rowSpan={2} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Site</th>
+                <th colSpan={10} className="power-group-header" style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Power (before)</th>
+                <th colSpan={10} className="power-group-header" style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>Power (metrics)</th>
                 <th rowSpan={2} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>ER</th>
               </tr>
               <tr>
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L1</th>
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L2</th>
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L3</th>
                 {['kWh','P','Q','S','PF','THD','F'].map((c) => (
-                  <th key={`before-${c}`} style={{ padding: 8, textAlign: c === 'kWh' ? 'right' : 'right', border: '1px solid #e5e7eb' }}>{c}</th>
+                  <th key={`before-${c}`} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>{c}</th>
                 ))}
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L1</th>
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L2</th>
+                <th style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>L3</th>
                 {['kWh','P','Q','S','PF','THD','F'].map((c) => (
-                  <th key={`metrics-${c}`} style={{ padding: 8, textAlign: c === 'kWh' ? 'right' : 'right', border: '1px solid #e5e7eb' }}>{c}</th>
+                  <th key={`metrics-${c}`} style={{ padding: 8, textAlign: 'center', border: '1px solid #e5e7eb' }}>{c}</th>
                 ))}
               </tr>
             </thead>
