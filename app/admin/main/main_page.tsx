@@ -81,7 +81,7 @@ export default function AdminMainPage() {
       <p style={{ color: '#6b7280', textAlign: 'left', fontSize: 24 }}>You are signed in as an admin. Use the links below to manage the system.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginTop: 60 }}>
-        <Link href="/admin/AdminKsavelogin" style={{ display: 'block', padding: 18, borderRadius: 14, background: '#fff', border: '1px solid #e6eefb', textDecoration: 'none', color: '#111827' }}>
+        <Link href="/" style={{ display: 'block', padding: 18, borderRadius: 14, background: '#fff', border: '1px solid #e6eefb', textDecoration: 'none', color: '#111827' }}>
           <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="2" y="7" width="20" height="10" rx="2" stroke="#2563eb" strokeWidth="1.5" fill="#eff6ff" />
@@ -159,45 +159,6 @@ export default function AdminMainPage() {
         >
           🎥 Join Zoom Meeting
         </button>
-        <button
-          onClick={() => window.open('https://github.com/login', '_blank')}
-          style={{
-            display: 'inline-block',
-            background: '#24292f',
-            color: '#fff',
-            padding: '12px 24px',
-            borderRadius: 6,
-            border: 'none',
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'background 0.2s',
-            marginRight: 12
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = '#444d56'}
-          onMouseLeave={(e) => e.currentTarget.style.background = '#24292f'}
-        >
-          <span style={{ marginRight: 8 }}>🐙</span> Connect GitHub
-        </button>
-        <button
-          onClick={() => window.open('https://vscode.dev/', '_blank')}
-          style={{
-            display: 'inline-block',
-            background: '#0078d4',
-            color: '#fff',
-            padding: '12px 24px',
-            borderRadius: 6,
-            border: 'none',
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'background 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = '#005fa3'}
-          onMouseLeave={(e) => e.currentTarget.style.background = '#0078d4'}
-        >
-          <span style={{ marginRight: 8 }}>🖥️</span> Connect VS Code
-        </button>
       </div>
 
       <div style={{ marginTop: 20, borderTop: '1px solid #eef2ff', paddingTop: 12 }}>
@@ -228,7 +189,7 @@ export default function AdminMainPage() {
               <path d="M7 14h6" stroke="#10b981" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
             <div>
-              <div style={{ fontWeight: 600, fontSize: 30 }}>System 2 R&D</div>
+              <div style={{ fontWeight: 600, fontSize: 30 }}>Thailand Admin R&D</div>
               <div style={{ fontSize: 18, color: '#6b7280' }}>Click For Login System</div>
             </div>
           </div>
@@ -248,7 +209,7 @@ export default function AdminMainPage() {
           </div>
         </Link>
 
-        <Link href="/admin/main/report" style={{ display: 'block', padding: 16, borderRadius: 10, background: '#fff', border: '1px solid #eef2ff', textDecoration: 'none', color: '#111827' }}>
+        <Link href="/admin/AdminKsave" style={{ display: 'block', padding: 16, borderRadius: 10, background: '#fff', border: '1px solid #eef2ff', textDecoration: 'none', color: '#111827' }}>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="3" y="3" width="18" height="18" rx="2" stroke="#6b7280" strokeWidth="1.2" fill="#f8fafc" />
