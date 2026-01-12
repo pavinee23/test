@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import PanelFrame from '../components/grafana/PanelFrame'
 
@@ -157,7 +157,7 @@ const translations = {
   }
 }
 
-export default function DeviceMonitoringPage() {
+function DeviceMonitoringContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const deviceId = searchParams.get('device') || ''
@@ -564,5 +564,13 @@ export default function DeviceMonitoringPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DeviceMonitoringPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 20, textAlign: 'center' }}>Loading...</div>}>
+      <DeviceMonitoringContent />
+    </Suspense>
   )
 }

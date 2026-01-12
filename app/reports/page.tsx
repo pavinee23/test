@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 type AnyObj = Record<string, any>
 
-export default function AdminPage(): React.ReactElement {
+function AdminPageContent(): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
   const deviceParam = searchParams.get('device')
@@ -651,7 +651,11 @@ export default function AdminPage(): React.ReactElement {
   )
 }
 
-
-
-
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 20, textAlign: 'center' }}>Loading...</div>}>
+      <AdminPageContent />
+    </Suspense>
+  )
+}
 
