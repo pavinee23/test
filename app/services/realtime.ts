@@ -58,12 +58,9 @@ async function queryInfluxLast(deviceId: string): Promise<{ ok: boolean; raw?: s
     Authorization: `Token ${INFLUX_TOKEN}`,
   }
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 10_000)
   try {
-    const res = await fetch(queryUrl, { method: 'POST', headers, body: flux, signal: controller.signal })
+    const res = await fetch(queryUrl, { method: 'POST', headers, body: flux })
     const text = await res.text()
-    clearTimeout(timeout)
     if (!res.ok) return { ok: false, error: text, raw: text }
 
     const raw = String(text || '')
@@ -114,7 +111,6 @@ async function queryInfluxLast(deviceId: string): Promise<{ ok: boolean; raw?: s
 
     return { ok: true, raw, parsed }
   } catch (err: any) {
-    clearTimeout(timeout)
     return { ok: false, error: String(err?.message || err) }
   }
 }

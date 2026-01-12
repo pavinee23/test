@@ -7,19 +7,22 @@ export default function UserLogin() {
 	const router = useRouter()
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
+	const [site, setSite] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [pressed, setPressed] = useState(false)
+	const [success, setSuccess] = useState(false)
+	const [focusedInput, setFocusedInput] = useState<string | null>(null)
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault()
 		setError(null)
 		setLoading(true)
 		try {
-			const res = await fetch('/api/auth', {
+			const res = await fetch('/api/user/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, password })
+				body: JSON.stringify({ username, password, site })
 			})
 
 			if (!res.ok) {
@@ -31,11 +34,24 @@ export default function UserLogin() {
 			if (data && data.token) {
 				try {
 					localStorage.setItem('k_system_user_token', data.token)
-					localStorage.setItem('k_system_user', data.username)
+					localStorage.setItem('k_system_user', JSON.stringify({
+						userId: data.userId,
+						username: data.username,
+						name: data.name,
+						email: data.email,
+						site: data.site
+					}))
 				} catch (err) {
 					console.error('failed to save token', err)
 				}
-				router.replace('/sites')
+
+				// Show success animation
+				setSuccess(true)
+
+				// Wait for animation then redirect
+				setTimeout(() => {
+					router.replace('/sites')
+				}, 1500)
 				return
 			}
 
@@ -49,77 +65,220 @@ export default function UserLogin() {
 
 	return (
 		<div style={styles.page}>
-			<div style={styles.overlay} />
+			{/* Background Animation */}
+			<div style={styles.bgAnimation}>
+				<div style={styles.circle1}></div>
+				<div style={styles.circle2}></div>
+				<div style={styles.circle3}></div>
+			</div>
+
+			<style>{`
+				@keyframes checkmark {
+					0% { stroke-dashoffset: 100; opacity: 0; }
+					50% { stroke-dashoffset: 0; opacity: 1; }
+					100% { stroke-dashoffset: 0; opacity: 1; }
+				}
+				@keyframes scaleIn {
+					0% { transform: scale(0); opacity: 0; }
+					50% { transform: scale(1.1); }
+					100% { transform: scale(1); opacity: 1; }
+				}
+				@keyframes float {
+					0%, 100% { transform: translateY(0) rotate(0deg); }
+					50% { transform: translateY(-20px) rotate(5deg); }
+				}
+				@keyframes pulse {
+					0%, 100% { transform: scale(1); opacity: 0.3; }
+					50% { transform: scale(1.05); opacity: 0.5; }
+				}
+				@keyframes slideUp {
+					from { opacity: 0; transform: translateY(30px); }
+					to { opacity: 1; transform: translateY(0); }
+				}
+				@keyframes spin {
+					from { transform: rotate(0deg); }
+					to { transform: rotate(360deg); }
+				}
+			`}</style>
+
+			{/* Success Overlay */}
+			{success && (
+				<div style={styles.successOverlay}>
+					<div style={styles.successCard}>
+						<svg width="80" height="80" viewBox="0 0 100 100">
+							<circle cx="50" cy="50" r="45" fill="#10b981" style={{ animation: 'scaleIn 0.5s ease' }} />
+							<path
+								d="M 30 50 L 45 65 L 70 35"
+								stroke="white"
+								strokeWidth="8"
+								fill="none"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								style={{
+									strokeDasharray: 100,
+									strokeDashoffset: 100,
+									animation: 'checkmark 0.8s ease forwards 0.3s'
+								}}
+							/>
+						</svg>
+						<div style={styles.successText}>Login Successful!</div>
+						<div style={styles.successSubtext}>Redirecting to dashboard...</div>
+					</div>
+				</div>
+			)}
+
 			<main style={styles.card}>
-				<div style={styles.brand}>
-					<h1 style={{
-						margin: 0,
-						fontSize: 34,
-						color: '#1f2937',
-						fontWeight: 800,
-						textShadow: '0 2px 4px rgba(255, 255, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.1)',
-						letterSpacing: '-0.5px'
-					}}>K Energy Save</h1>
-					<p style={{
-						margin: '10px 0 0 0',
-						fontSize: 15,
-						color: '#6b7280',
-						fontWeight: 600,
-						letterSpacing: '0.3px',
-						textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)'
-					}}>User Login</p>
+				{/* Logo Section */}
+				<div style={styles.logoSection}>
+					<div style={styles.logoCircle}>
+						<img
+							src="/k-energy-save-logo.jpg"
+							alt="K Energy Save Logo"
+							style={styles.logoImage}
+						/>
+					</div>
+					<h1 style={styles.brandName}>K Energy Save Co., Ltd</h1>
+					<p style={styles.tagline}>ENERGY...YOU CAN TRUST.</p>
+					<p style={styles.subTagline}>"SAVINGS" YOU CAN SEE.</p>
+					<div style={styles.divider}></div>
 				</div>
 
 				<form onSubmit={handleSubmit} style={styles.form}>
-					<label style={styles.label}>
-						Username
+					<h2 style={styles.formTitle}>Login</h2>
+
+					{/* Username Input */}
+					<div style={styles.inputGroup}>
+						<label style={styles.label}>
+							<span style={styles.labelIcon}>👤</span>
+							Username
+						</label>
 						<input
 							required
+							type="text"
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
-							style={styles.input}
-							type="text"
+							onFocus={() => setFocusedInput('username')}
+							onBlur={() => setFocusedInput(null)}
+							placeholder="Enter your username"
 							autoComplete="username"
+							style={{
+								...styles.input,
+								borderColor: focusedInput === 'username' ? '#10b981' : '#e5e7eb',
+								boxShadow: focusedInput === 'username' ? '0 0 0 3px rgba(16, 185, 129, 0.1)' : 'none'
+							}}
 						/>
-					</label>
+					</div>
 
-					<label style={styles.label}>
-						Password
+					{/* Password Input */}
+					<div style={styles.inputGroup}>
+						<label style={styles.label}>
+							<span style={styles.labelIcon}>🔒</span>
+							Password
+						</label>
 						<input
 							required
+							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							style={styles.input}
-							type="password"
+							onFocus={() => setFocusedInput('password')}
+							onBlur={() => setFocusedInput(null)}
+							placeholder="Enter your password"
 							autoComplete="current-password"
+							style={{
+								...styles.input,
+								borderColor: focusedInput === 'password' ? '#10b981' : '#e5e7eb',
+								boxShadow: focusedInput === 'password' ? '0 0 0 3px rgba(16, 185, 129, 0.1)' : 'none'
+							}}
 						/>
-					</label>
+					</div>
 
-					{error && <div style={styles.error}>{error}</div>}
+					{/* Site Input */}
+					<div style={styles.inputGroup}>
+						<label style={styles.label}>
+							<span style={styles.labelIcon}>🏢</span>
+							Site / Branch
+						</label>
+						<input
+							required
+							type="text"
+							value={site}
+							onChange={(e) => setSite(e.target.value)}
+							onFocus={() => setFocusedInput('site')}
+							onBlur={() => setFocusedInput(null)}
+							placeholder="e.g., Thailand, Republic Korea"
+							autoComplete="organization"
+							style={{
+								...styles.input,
+								borderColor: focusedInput === 'site' ? '#10b981' : '#e5e7eb',
+								boxShadow: focusedInput === 'site' ? '0 0 0 3px rgba(16, 185, 129, 0.1)' : 'none'
+							}}
+						/>
+					</div>
 
+					{/* Error Message */}
+					{error && (
+						<div style={styles.error}>
+							<span style={styles.errorIcon}>⚠️</span>
+							{error}
+						</div>
+					)}
+
+					{/* Submit Button */}
 					<button
 						type="submit"
+						disabled={loading || success}
 						style={{
 							...styles.button,
-							transform: pressed ? 'translateY(1px) scale(.997)' : 'translateY(0)',
-							boxShadow:
-								pressed
-									? '0 4px 12px rgba(2,6,23,0.6), inset 0 -2px 0 rgba(0,0,0,0.18)'
-									: '0 10px 28px rgba(2,6,23,0.7), 0 2px 6px rgba(124,58,237,0.12), inset 0 -2px 0 rgba(255,255,255,0.03)'
+							opacity: loading || success ? 0.7 : 1,
+							cursor: loading || success ? 'not-allowed' : 'pointer'
 						}}
-						disabled={loading}
-						onPointerDown={() => setPressed(true)}
-						onPointerUp={() => setPressed(false)}
-						onPointerLeave={() => setPressed(false)}
 					>
-						{loading ? 'Signing in…' : 'Sign in'}
+						{loading ? (
+							<>
+								<span style={styles.spinner}></span>
+								Signing in...
+							</>
+						) : success ? (
+							'Success!'
+						) : (
+							<>
+								Sign In
+								<span style={styles.buttonArrow}>→</span>
+							</>
+						)}
 					</button>
 				</form>
 
+				{/* Features Section */}
+				<div style={styles.features}>
+					<div style={styles.feature}>
+						<span style={styles.featureIcon}>⚡</span>
+						<span style={styles.featureText}>7-15% Electricity Savings</span>
+					</div>
+					<div style={styles.feature}>
+						<span style={styles.featureIcon}>✓</span>
+						<span style={styles.featureText}>Patented & Certified</span>
+					</div>
+					<div style={styles.feature}>
+						<span style={styles.featureIcon}>🌍</span>
+						<span style={styles.featureText}>Trusted in 40+ Countries</span>
+					</div>
+				</div>
+
+				{/* Footer */}
 				<footer style={styles.footer}>
-					<small style={{ color: '#6b7280', fontSize: 13 }}>K Energy Save co., Ltd • {new Date().getFullYear()}</small>
+					<div style={styles.footerLinks}>
+						<a href="/contact" style={styles.link}>Need Help?</a>
+						<span style={styles.footerDot}>•</span>
+						<a href="#" style={styles.link}>Privacy Policy</a>
+					</div>
+					<p style={styles.copyright}>© {new Date().getFullYear()} K Energy Save Co., Ltd. All rights reserved.</p>
 				</footer>
 			</main>
+
+			{/* Decorative Elements */}
+			<div style={styles.decorLeft}></div>
+			<div style={styles.decorRight}></div>
 		</div>
 	)
 }
@@ -131,84 +290,303 @@ const styles: { [k: string]: React.CSSProperties } = {
 		alignItems: 'center',
 		justifyContent: 'center',
 		position: 'relative',
-		backgroundImage: 'linear-gradient(135deg, #374151 0%, #4b5563 25%, #6b7280 50%, #9ca3af 100%)',
-		backgroundSize: 'cover',
-		padding: 32,
-		boxSizing: 'border-box'
+		background: 'linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%)',
+		padding: '20px',
+		overflow: 'hidden'
 	},
-	overlay: {
+	bgAnimation: {
 		position: 'absolute',
 		inset: 0,
-		background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.15), rgba(0,0,0,0.3))',
+		overflow: 'hidden',
 		pointerEvents: 'none'
+	},
+	circle1: {
+		position: 'absolute',
+		width: 400,
+		height: 400,
+		borderRadius: '50%',
+		background: 'radial-gradient(circle, rgba(16, 185, 129, 0.3), transparent)',
+		top: '-200px',
+		left: '-200px',
+		animation: 'pulse 8s ease-in-out infinite'
+	},
+	circle2: {
+		position: 'absolute',
+		width: 300,
+		height: 300,
+		borderRadius: '50%',
+		background: 'radial-gradient(circle, rgba(5, 150, 105, 0.3), transparent)',
+		bottom: '-150px',
+		right: '-150px',
+		animation: 'pulse 10s ease-in-out infinite 2s'
+	},
+	circle3: {
+		position: 'absolute',
+		width: 200,
+		height: 200,
+		borderRadius: '50%',
+		background: 'radial-gradient(circle, rgba(209, 250, 229, 0.2), transparent)',
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%, -50%)',
+		animation: 'pulse 6s ease-in-out infinite 4s'
 	},
 	card: {
 		width: '100%',
-		maxWidth: 520,
-		background: 'linear-gradient(145deg, #ffffff, #f9fafb)',
-		border: '1px solid rgba(209, 213, 219, 0.6)',
-		borderRadius: 20,
-		padding: 48,
+		maxWidth: 480,
+		background: 'rgba(255, 255, 255, 0.98)',
+		backdropFilter: 'blur(20px)',
+		borderRadius: 24,
+		padding: '48px 40px',
 		position: 'relative',
-		boxShadow: '0 25px 80px rgba(0, 0, 0, 0.25), 0 10px 30px rgba(75, 85, 99, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-		color: '#1f2937',
-		backdropFilter: 'blur(10px)'
+		boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), 0 0 1px rgba(16, 185, 129, 0.3)',
+		animation: 'slideUp 0.6s ease-out',
+		zIndex: 1
 	},
-	brand: {
+	logoSection: {
 		textAlign: 'center',
 		marginBottom: 32
 	},
+	logoCircle: {
+		width: 140,
+		height: 140,
+		borderRadius: '50%',
+		background: '#ffffff',
+		margin: '0 auto 16px',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		boxShadow: '0 8px 24px rgba(16, 185, 129, 0.5), 0 0 0 4px rgba(16, 185, 129, 0.1)',
+		animation: 'float 3s ease-in-out infinite',
+		padding: 12,
+		overflow: 'hidden'
+	},
+	logoImage: {
+		width: '100%',
+		height: '100%',
+		objectFit: 'contain',
+		borderRadius: '50%'
+	},
+	brandName: {
+		margin: 0,
+		fontSize: 24,
+		fontWeight: 800,
+		color: '#064e3b',
+		letterSpacing: '-0.5px'
+	},
+	tagline: {
+		margin: '8px 0 0 0',
+		fontSize: 13,
+		color: '#059669',
+		fontWeight: 700,
+		letterSpacing: '1px',
+		textTransform: 'uppercase'
+	},
+	subTagline: {
+		margin: '4px 0 0 0',
+		fontSize: 12,
+		color: '#10b981',
+		fontWeight: 600,
+		letterSpacing: '0.5px',
+		fontStyle: 'italic'
+	},
+	divider: {
+		width: 60,
+		height: 3,
+		background: 'linear-gradient(90deg, #10b981, #059669)',
+		margin: '20px auto',
+		borderRadius: 2
+	},
 	form: {
-		display: 'grid',
+		display: 'flex',
+		flexDirection: 'column',
 		gap: 20
 	},
+	formTitle: {
+		margin: '0 0 24px 0',
+		fontSize: 28,
+		fontWeight: 700,
+		color: '#1F1346',
+		textAlign: 'center'
+	},
+	inputGroup: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: 8
+	},
 	label: {
-		display: 'block',
 		fontSize: 14,
 		fontWeight: 600,
-		color: '#374151',
-		textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)'
+		color: '#065f46',
+		display: 'flex',
+		alignItems: 'center',
+		gap: 6
+	},
+	labelIcon: {
+		fontSize: 16
 	},
 	input: {
 		width: '100%',
-		marginTop: 8,
-		padding: '14px 18px',
-		borderRadius: 10,
-		border: '2px solid #d1d5db',
-		background: 'linear-gradient(to bottom, #ffffff, #f9fafb)',
-		color: '#111827',
-		fontSize: 15,
-		transition: 'all 0.2s ease',
+		padding: '14px 16px',
+		fontSize: 16,
+		border: '2px solid #e5e7eb',
+		borderRadius: 12,
 		outline: 'none',
-		boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(255, 255, 255, 0.8)'
+		transition: 'all 0.3s ease',
+		background: '#ffffff',
+		color: '#064e3b',
+		fontFamily: 'inherit'
 	},
 	button: {
-		marginTop: 12,
+		marginTop: 8,
 		padding: '16px 24px',
-		borderRadius: 10,
-		border: 'none',
-		background: 'linear-gradient(145deg, #4b5563, #374151)',
-		color: '#ffffff',
-		fontWeight: 700,
 		fontSize: 16,
+		fontWeight: 700,
+		color: '#ffffff',
+		background: 'linear-gradient(135deg, #10b981, #059669)',
+		border: 'none',
+		borderRadius: 12,
 		cursor: 'pointer',
-		letterSpacing: '0.5px',
-		boxShadow: '0 6px 20px rgba(75, 85, 99, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.2)',
-		transition: 'all .2s ease',
-		textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+		transition: 'all 0.3s ease',
+		boxShadow: '0 8px 20px rgba(16, 185, 129, 0.5)',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		position: 'relative',
+		overflow: 'hidden'
+	},
+	buttonArrow: {
+		fontSize: 20,
+		transition: 'transform 0.3s ease'
+	},
+	spinner: {
+		width: 18,
+		height: 18,
+		border: '2px solid rgba(255, 255, 255, 0.3)',
+		borderTop: '2px solid #ffffff',
+		borderRadius: '50%',
+		animation: 'spin 0.8s linear infinite'
 	},
 	error: {
-		color: '#dc2626',
-		background: 'linear-gradient(145deg, #fee2e2, #fecaca)',
-		border: '1px solid #fca5a5',
 		padding: '12px 16px',
-		borderRadius: 10,
+		background: 'linear-gradient(135deg, #fee2e2, #fecaca)',
+		border: '2px solid #fca5a5',
+		borderRadius: 12,
+		color: '#dc2626',
 		fontSize: 14,
-		fontWeight: 500,
-		boxShadow: '0 2px 8px rgba(220, 38, 38, 0.15)'
+		fontWeight: 600,
+		display: 'flex',
+		alignItems: 'center',
+		gap: 8
+	},
+	errorIcon: {
+		fontSize: 18
+	},
+	features: {
+		marginTop: 24,
+		display: 'flex',
+		flexDirection: 'column',
+		gap: 12,
+		padding: '20px 0',
+		borderTop: '1px solid #e5e7eb'
+	},
+	feature: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: 12,
+		padding: '8px 0'
+	},
+	featureIcon: {
+		fontSize: 18,
+		width: 24,
+		textAlign: 'center'
+	},
+	featureText: {
+		fontSize: 13,
+		color: '#065f46',
+		fontWeight: 600,
+		letterSpacing: '0.2px'
 	},
 	footer: {
-		marginTop: 28,
+		marginTop: 32,
+		paddingTop: 24,
+		borderTop: '1px solid #e5e7eb',
 		textAlign: 'center'
+	},
+	footerLinks: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 12,
+		marginBottom: 12
+	},
+	link: {
+		fontSize: 14,
+		color: '#10b981',
+		textDecoration: 'none',
+		fontWeight: 600,
+		transition: 'color 0.2s ease'
+	},
+	footerDot: {
+		color: '#d1d5db',
+		fontSize: 12
+	},
+	copyright: {
+		margin: 0,
+		fontSize: 12,
+		color: '#727586'
+	},
+	successOverlay: {
+		position: 'fixed',
+		inset: 0,
+		background: 'rgba(6, 78, 59, 0.9)',
+		backdropFilter: 'blur(8px)',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 9999
+	},
+	successCard: {
+		background: 'white',
+		borderRadius: 24,
+		padding: 48,
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+		gap: 16,
+		animation: 'scaleIn 0.5s ease',
+		boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+	},
+	successText: {
+		fontSize: 24,
+		fontWeight: 700,
+		color: '#10b981'
+	},
+	successSubtext: {
+		fontSize: 14,
+		color: '#727586'
+	},
+	decorLeft: {
+		position: 'absolute',
+		width: 200,
+		height: 200,
+		background: 'linear-gradient(135deg, rgba(209, 250, 229, 0.3), transparent)',
+		borderRadius: '50%',
+		top: 100,
+		left: -100,
+		filter: 'blur(60px)',
+		pointerEvents: 'none'
+	},
+	decorRight: {
+		position: 'absolute',
+		width: 300,
+		height: 300,
+		background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), transparent)',
+		borderRadius: '50%',
+		bottom: -150,
+		right: -150,
+		filter: 'blur(80px)',
+		pointerEvents: 'none'
 	}
 }

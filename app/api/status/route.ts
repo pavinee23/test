@@ -2,22 +2,6 @@ import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
-async function httpCheck(url: string, timeout = 2000) {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), timeout)
-    const res = await fetch(url, { 
-      method: 'GET', 
-      signal: controller.signal,
-      cache: 'no-store'
-    })
-    clearTimeout(timeoutId)
-    return res.ok
-  } catch (e) {
-    return false
-  }
-}
-
 export async function GET() {
   // Use environment variables to get service URLs (Cloudflare Workers can't access localhost)
   const influxHost = process.env.INFLUX_HOST || process.env.DOCKER_INFLUXDB_INIT_HOST || 'http://127.0.0.1:8086'

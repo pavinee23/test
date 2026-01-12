@@ -34,8 +34,8 @@ export default function AdminLoginPage() {
         return
       }
       // store token and redirect to admin login success page
-      try { 
-        localStorage.setItem('k_system_admin_token', body.token) 
+      try {
+        localStorage.setItem('k_system_admin_token', body.token)
         console.log('Login successful, token stored:', body.token)
       } catch (err) {
         console.error('Failed to store token:', err)

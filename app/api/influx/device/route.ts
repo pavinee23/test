@@ -2,11 +2,27 @@ import { NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
+// Simple edge-compatible cache using global
+const globalForCache = globalThis as unknown as {
+  edgeCache: Map<string, { data: any; expires: number }>
+}
+if (!globalForCache.edgeCache) {
+  globalForCache.edgeCache = new Map()
+}
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url)
     const id = url.searchParams.get('id')
     if (!id) return NextResponse.json({ ok: false, error: 'missing id query param' }, { status: 400 })
+
+    // Check cache first (3 second TTL for device data)
+    const cacheKey = `device:${id}`
+    const now = Date.now()
+    const cached = globalForCache.edgeCache.get(cacheKey)
+    if (cached && cached.expires > now) {
+      return NextResponse.json(cached.data)
+    }
 
     const INFLUX_HOST = process.env.INFLUX_HOST || process.env.DOCKER_INFLUXDB_INIT_HOST || 'http://127.0.0.1:8086'
     const INFLUX_BUCKET = process.env.INFLUX_BUCKET || process.env.DOCKER_INFLUXDB_INIT_BUCKET || 'k_db'
@@ -102,7 +118,16 @@ export async function GET(req: Request) {
     } catch (e) {
       // ignore parsing errors
     }
-  return NextResponse.json({ ok: true, id, raw, parsed })
+
+    const result = { ok: true, id, raw, parsed }
+
+    // Cache the result for 3 seconds
+    globalForCache.edgeCache.set(cacheKey, {
+      data: result,
+      expires: Date.now() + 3000
+    })
+
+    return NextResponse.json(result)
   } catch (err: any) {
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 })
   }
