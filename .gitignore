@@ -40,3 +40,6 @@ next-env.d.ts
 # mysql data
 data/
 *.sql
+node_modules
+.nvm
+.nvm
