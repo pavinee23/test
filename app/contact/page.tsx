@@ -22,11 +22,10 @@ export default function ContactPage() {
 
 	// Chatbot state
 	const [chatOpen, setChatOpen] = useState(false)
-	const [chatMessages, setChatMessages] = useState<Array<{text: string, sender: 'user' | 'bot'}>>([
-		{ text: 'Hello! How can I help you today?', sender: 'bot' }
-	])
+	const [chatMessages, setChatMessages] = useState<Array<{text: string, sender: 'user' | 'bot'}>>([])
 	const [chatInput, setChatInput] = useState('')
 	const [chatLoading, setChatLoading] = useState(false)
+	const [mounted, setMounted] = useState(false)
 
 	// Translation data
 	const translations = {
@@ -65,7 +64,9 @@ export default function ContactPage() {
 			chatTitle: 'K Energy Save',
 			chatOnline: 'Online',
 			chatPlaceholder: 'Type your message...',
-			chatInitial: 'Hello! How can I help you today?'
+			chatInitial: 'Hello! How can I help you today?',
+			privacyPolicy: 'Privacy Policy',
+			adminLogin: 'Admin Login'
 		},
 		th: {
 			title: 'ติดต่อเรา',
@@ -102,7 +103,9 @@ export default function ContactPage() {
 			chatTitle: 'บริษัท เค เอ็นเนอร์ยี่ เซฟ จำกัด',
 			chatOnline: 'ออนไลน์',
 			chatPlaceholder: 'พิมพ์ข้อความของคุณ...',
-			chatInitial: 'สวัสดีครับ! มีอะไรให้ช่วยไหมครับ?'
+			chatInitial: 'สวัสดีครับ! มีอะไรให้ช่วยไหมครับ?',
+			privacyPolicy: 'นโยบายความเป็นส่วนตัว',
+			adminLogin: 'เข้าสู่ระบบผู้ดูแล'
 		},
 		ko: {
 			title: '문의하기',
@@ -139,7 +142,9 @@ export default function ContactPage() {
 			chatTitle: 'K 에너지 세이브',
 			chatOnline: '온라인',
 			chatPlaceholder: '메시지를 입력하세요...',
-			chatInitial: '안녕하세요! 무엇을 도와드릴까요?'
+			chatInitial: '안녕하세요! 무엇을 도와드릴까요?',
+			privacyPolicy: '개인정보 처리방침',
+			adminLogin: '관리자 로그인'
 		},
 		zh: {
 			title: '联系我们',
@@ -176,11 +181,19 @@ export default function ContactPage() {
 			chatTitle: 'K 能源节省',
 			chatOnline: '在线',
 			chatPlaceholder: '输入您的消息...',
-			chatInitial: '您好！有什么可以帮您的吗？'
+			chatInitial: '您好！有什么可以帮您的吗？',
+			privacyPolicy: '隐私政策',
+			adminLogin: '管理员登录'
 		}
 	}
 
 	const t = translations[language]
+
+	// Initialize chat message on mount
+	React.useEffect(() => {
+		setMounted(true)
+		setChatMessages([{ text: translations[language].chatInitial, sender: 'bot' }])
+	}, [])
 
 	// Update chat initial message when language changes
 	const handleLanguageChange = (lang: 'en' | 'th' | 'ko' | 'zh') => {
@@ -332,7 +345,7 @@ export default function ContactPage() {
 	}
 
 	return (
-		<div style={styles.page}>
+		<div style={styles.page} suppressHydrationWarning>
 			{/* Background Pattern Overlay */}
 			<div style={styles.bgPattern}></div>
 
@@ -371,7 +384,7 @@ export default function ContactPage() {
 			`}</style>
 
 			<main style={styles.container}>
-				<button onClick={() => router.back()} style={styles.backButton}>
+				<button onClick={() => router.push('/')} style={styles.backButton}>
 					← Back
 				</button>
 
@@ -384,7 +397,7 @@ export default function ContactPage() {
 							...(language === 'en' ? styles.langButtonActive : {})
 						}}
 					>
-						EN
+						🇬🇧 EN
 					</button>
 					<button
 						onClick={() => handleLanguageChange('th')}
@@ -638,7 +651,7 @@ export default function ContactPage() {
 
 					{/* Chat Messages */}
 					<div style={styles.chatMessages}>
-						{chatMessages.map((msg, index) => (
+						{mounted && chatMessages.map((msg, index) => (
 							<div
 								key={index}
 								style={{
@@ -1046,6 +1059,55 @@ const styles: { [k: string]: React.CSSProperties } = {
 		fontWeight: 600,
 		color: '#064e3b'
 	},
+	// Privacy Policy section
+	privacySection: {
+		marginTop: 32,
+		paddingTop: 24,
+		borderTop: '2px solid #e5e7eb',
+		display: 'flex',
+		justifyContent: 'center'
+	} as React.CSSProperties,
+	privacyButton: {
+		padding: '12px 28px',
+		background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+		border: 'none',
+		borderRadius: 12,
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: 600,
+		cursor: 'pointer',
+		transition: 'all 0.3s ease',
+		boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)',
+		display: 'flex',
+		alignItems: 'center',
+		gap: 8
+	} as React.CSSProperties,
+	// Admin Login section (Easter Egg)
+	adminSection: {
+		marginTop: 16,
+		padding: '20px',
+		background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05))',
+		borderRadius: 16,
+		border: '2px dashed #ef4444',
+		display: 'flex',
+		justifyContent: 'center',
+		animation: 'successPulse 2s ease-in-out infinite'
+	} as React.CSSProperties,
+	adminButton: {
+		padding: '14px 32px',
+		background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+		border: 'none',
+		borderRadius: 12,
+		color: '#ffffff',
+		fontSize: 16,
+		fontWeight: 700,
+		cursor: 'pointer',
+		transition: 'all 0.3s ease',
+		boxShadow: '0 6px 16px rgba(239, 68, 68, 0.4)',
+		display: 'flex',
+		alignItems: 'center',
+		gap: 10
+	} as React.CSSProperties,
 	// Chatbot styles
 	chatButton: {
 		position: 'fixed',

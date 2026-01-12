@@ -102,7 +102,7 @@ export default function LoginMain() {
 				</form>
 
 				<footer style={styles.footer}>
-					<small style={{ color: '#9ca3af' }}>K Energy Save co., Ltd • {new Date().getFullYear()}</small>
+					<small style={{ color: '#9ca3af' }}>K Energy Save co., Ltd • 2026</small>
 				</footer>
 			</main>
 		</div>

@@ -270,9 +270,9 @@ export default function UserLogin() {
 					<div style={styles.footerLinks}>
 						<a href="/contact" style={styles.link}>Need Help?</a>
 						<span style={styles.footerDot}>•</span>
-						<a href="#" style={styles.link}>Privacy Policy</a>
+						<a href="/privacy-policy" style={styles.link}>Privacy Policy</a>
 					</div>
-					<p style={styles.copyright}>© {new Date().getFullYear()} K Energy Save Co., Ltd. All rights reserved.</p>
+					<p style={styles.copyright}>© 2026 K Energy Save Co., Ltd. All rights reserved.</p>
 				</footer>
 			</main>
 
