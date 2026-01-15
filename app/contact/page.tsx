@@ -265,13 +265,68 @@ export default function ContactPage() {
 	function getBotResponse(message: string): string {
 		const lowerMsg = message.toLowerCase()
 
+		// Detect language from message
+		const isThai = /[\u0E00-\u0E7F]/.test(message)
+		const isKorean = /[\uAC00-\uD7AF]/.test(message)
+		const isChinese = /[\u4E00-\u9FFF]/.test(message)
+
+		// Thai responses
+		if (isThai) {
+			if (lowerMsg.includes('สวัสดี') || lowerMsg.includes('หวัดดี') || lowerMsg.includes('ดีครับ') || lowerMsg.includes('ดีค่ะ')) {
+				return 'สวัสดีครับ! ยินดีต้อนรับสู่ K Energy Save 👋\n\nเราเชี่ยวชาญด้านโซลูชันประหยัดพลังงานที่ได้รับความไว้วางใจใน 40+ ประเทศ\n\nมีอะไรให้ช่วยไหมครับ?\n\n• ข้อมูลผลิตภัณฑ์\n• ราคาและใบเสนอราคา\n• บริการติดตั้ง\n• ฝ่ายสนับสนุนด้านเทคนิค'
+			}
+			if (lowerMsg.includes('ผลิตภัณฑ์') || lowerMsg.includes('สินค้า') || lowerMsg.includes('รุ่น')) {
+				return '⚡ ผลิตภัณฑ์ K-SAVER:\n\n✓ K-SAVER 10 - สำหรับสถานที่ขนาดเล็ก (10-50 kW)\n✓ K-SAVER 30 - สำหรับสถานที่ขนาดกลาง (50-150 kW)\n✓ K-SAVER Max - สำหรับโรงงานอุตสาหกรรมขนาดใหญ่ (150+ kW)\n\n🌟 ประโยชน์หลัก:\n• รับประกันประหยัดไฟ 7-15%\n• เทคโนโลยีจดสิทธิบัตร\n• คืนทุนภายใน 12-24 เดือน\n• ไม่ต้องบำรุงรักษา\n\nสนใจรุ่นไหนครับ?'
+			}
+			if (lowerMsg.includes('ราคา') || lowerMsg.includes('เท่าไหร่') || lowerMsg.includes('ค่าใช้จ่าย') || lowerMsg.includes('ใบเสนอราคา')) {
+				return '💰 ข้อมูลราคา:\n\nราคาขึ้นอยู่กับ:\n• ขนาดและการใช้ไฟของสถานที่\n• ความซับซ้อนในการติดตั้ง\n• รุ่นที่เลือก\n\n📋 ขอใบเสนอราคาฟรี:\n📞 โทร: +66 2 0808916\n📧 อีเมล: info@kenergy-save.com\n💬 LINE: @534znjie\n\nเรามีแผนผ่อนชำระและวิเคราะห์ ROI ให้ครับ!'
+			}
+			if (lowerMsg.includes('ติดตั้ง') || lowerMsg.includes('ใช้เวลา')) {
+				return '🔧 ขั้นตอนการติดตั้ง:\n\n1️⃣ สำรวจหน้างานและประเมิน (ฟรี)\n2️⃣ ออกแบบโซลูชันเฉพาะ\n3️⃣ ติดตั้งโดยผู้เชี่ยวชาญ (2-6 ชั่วโมง)\n4️⃣ ทดสอบและตรวจรับ\n5️⃣ อบรมและจัดทำเอกสาร\n6️⃣ บริการหลังการขาย\n\n✓ ช่างที่ได้รับการรับรอง\n✓ ไม่กระทบการทำงาน\n✓ สนับสนุนด้านเทคนิค 24/7\n\nพร้อมนัดติดตั้งไหมครับ?'
+			}
+			if (lowerMsg.includes('ประหยัด') || lowerMsg.includes('ลด') || lowerMsg.includes('คืนทุน')) {
+				return '💡 การประหยัดพลังงาน:\n\n📊 ประหยัดเฉลี่ย: 7-15%\n💵 คืนทุน: 12-24 เดือน\n📈 อายุการใช้งาน: 10+ ปี\n\n💰 ตัวอย่าง:\nค่าไฟรายเดือน: ฿100,000\nประหยัด (10%): ฿10,000/เดือน\nประหยัดต่อปี: ฿120,000\nระยะคืนทุน: 18 เดือน\n\nต้องการวิเคราะห์การประหยัดเฉพาะหน่วยงานไหมครับ?'
+			}
+			if (lowerMsg.includes('รับประกัน') || lowerMsg.includes('การันตี') || lowerMsg.includes('ใบรับรอง')) {
+				return '🏆 การรับประกัน:\n\n✓ K-SAVER 10: 3 ปี\n✓ K-SAVER 30: 5 ปี\n✓ K-SAVER Max: 7 ปี\n\n✓ ใบรับรอง: ISO 9001:2015, CE & RoHS, UL Listed\n✓ การันตีประหยัดพลังงาน 7-15%\n✓ บำรุงรักษาฟรี (ช่วงประกัน)\n✓ สนับสนุนด้านเทคนิค 24/7\n\nได้รับความไว้วางใจจาก 1,000+ องค์กรทั่วโลก!'
+			}
+			if (lowerMsg.includes('ติดต่อ') || lowerMsg.includes('โทร') || lowerMsg.includes('ที่อยู่') || lowerMsg.includes('ไลน์')) {
+				return '📞 ติดต่อ K Energy Save:\n\n📱 โทร: +66 2 0808916\n📧 อีเมล: info@kenergy-save.com\n💬 LINE: @534znjie\n\n🏢 เวลาทำการ:\nจันทร์ - ศุกร์: 9:00 - 18:00 น.\n\nหรือกรอกแบบฟอร์มติดต่อ เราจะตอบกลับภายใน 24 ชั่วโมง!'
+			}
+			if (lowerMsg.includes('ทำงาน') || lowerMsg.includes('หลักการ') || lowerMsg.includes('เทคโนโลยี') || lowerMsg.includes('ยังไง') || lowerMsg.includes('อย่างไร')) {
+				return '🔬 หลักการทำงานของ K-SAVER:\n\n⚡ การเพิ่มประสิทธิภาพพลังงาน:\n• ลดการใช้ Reactive Power\n• ปรับสมดุลโหลดไฟฟ้า\n• กรอง Harmonics\n• ปรับ Power Factor เป็น 0.95+\n\n🌟 ผลลัพธ์:\n✓ ค่าไฟลดลง\n✓ อุปกรณ์อายุยืนขึ้น\n✓ คุณภาพไฟฟ้าดีขึ้น'
+			}
+			if (lowerMsg.includes('ช่วย') || lowerMsg.includes('ปัญหา') || lowerMsg.includes('บริการ') || lowerMsg.includes('ซ่อม')) {
+				return '🛠️ ฝ่ายบริการลูกค้า:\n\n📞 สายด่วน 24/7: +66 2 0808916\n💬 LINE: @534znjie\n📧 อีเมล: info@kenergy-save.com\n\n✓ วินิจฉัยปัญหาระยะไกล\n✓ บำรุงรักษาที่หน้างาน\n✓ ตอบสนองฉุกเฉิน\n✓ อะไหล่พร้อมส่ง\n\nเราพร้อมช่วยเหลือครับ!'
+			}
+			// Default Thai
+			return '😊 ขอบคุณสำหรับคำถามครับ!\n\nผมช่วยเรื่องเหล่านี้ได้:\n• ข้อมูลผลิตภัณฑ์ (K-SAVER)\n• ราคาและใบเสนอราคา\n• บริการติดตั้ง\n• สนับสนุนด้านเทคนิค\n• คำนวณการประหยัด\n• การรับประกัน\n\nหรือติดต่อทีมงานโดยตรง:\n📞 +66 2 0808916\n📧 info@kenergy-save.com\n💬 LINE: @534znjie\n\nต้องการทราบเรื่องอะไรเพิ่มเติมครับ?'
+		}
+
+		// Korean responses
+		if (isKorean) {
+			if (lowerMsg.includes('안녕') || lowerMsg.includes('반갑')) {
+				return '안녕하세요! K Energy Save에 오신 것을 환영합니다 👋\n\n40개국 이상에서 신뢰받는 에너지 절약 솔루션 전문 기업입니다.\n\n무엇을 도와드릴까요?\n\n• 제품 정보\n• 가격 및 견적\n• 설치 서비스\n• 기술 지원'
+			}
+			return '😊 문의해 주셔서 감사합니다!\n\n다음 사항에 대해 도움드릴 수 있습니다:\n• 제품 정보 (K-SAVER)\n• 가격 및 견적\n• 설치 서비스\n• 기술 지원\n\n직접 연락:\n📞 +82 31-427-1380\n📧 info@kenergy-save.com\n\n더 알고 싶은 것이 있으신가요?'
+		}
+
+		// Chinese responses
+		if (isChinese) {
+			if (lowerMsg.includes('你好') || lowerMsg.includes('您好')) {
+				return '您好！欢迎来到 K Energy Save 👋\n\n我们是专业的节能解决方案提供商，业务遍及40多个国家。\n\n有什么可以帮您的？\n\n• 产品信息\n• 价格与报价\n• 安装服务\n• 技术支持'
+			}
+			return '😊 感谢您的咨询！\n\n我可以帮助您了解：\n• 产品信息 (K-SAVER)\n• 价格与报价\n• 安装服务\n• 技术支持\n\n直接联系我们：\n📞 +82 31-427-1380\n📧 info@kenergy-save.com\n\n还有什么想了解的吗？'
+		}
+
+		// English responses (default)
 		// Greetings
-		if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('สวัสดี')) {
+		if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
 			return 'Hello! Welcome to K Energy Save 👋\n\nWe specialize in energy-saving solutions trusted in 40+ countries. How can I help you today?\n\n• Product Information\n• Pricing & Quotation\n• Installation Service\n• Technical Support'
 		}
 
 		// Products - General
-		if (lowerMsg.includes('product') || lowerMsg.includes('k-saver') || lowerMsg.includes('ผลิตภัณฑ์')) {
+		if (lowerMsg.includes('product') || lowerMsg.includes('k-saver')) {
 			return '⚡ Our K-SAVER Product Line:\n\n✓ K-SAVER 10 - For small facilities (10-50 kW)\n✓ K-SAVER 30 - For medium facilities (50-150 kW)\n✓ K-SAVER Max - For large industrial facilities (150+ kW)\n\n🌟 Key Benefits:\n• 7-15% electricity savings guaranteed\n• Patented & certified technology\n• ROI within 12-24 months\n• Maintenance-free operation\n\nWhich model would you like to know more about?'
 		}
 
@@ -333,11 +388,6 @@ export default function ContactPage() {
 		// Case Studies & References
 		if (lowerMsg.includes('case') || lowerMsg.includes('example') || lowerMsg.includes('reference') || lowerMsg.includes('customer')) {
 			return '📊 Success Stories:\n\n🏭 Manufacturing Plant (Thailand):\n• Installed: K-SAVER Max\n• Savings: 14.5% monthly\n• ROI: 16 months\n• Annual Benefit: ฿2.4M\n\n🏨 Hotel Chain (Bangkok):\n• Installed: K-SAVER 30\n• Savings: 11.8% monthly\n• ROI: 20 months\n• Improved guest comfort\n\n🏬 Shopping Mall (Phuket):\n• Installed: K-SAVER Max\n• Savings: 13.2% monthly\n• ROI: 18 months\n• Reduced carbon footprint\n\nJoin 1,000+ satisfied customers!\n\nWant to schedule a site visit?'
-		}
-
-		// Thai language support
-		if (lowerMsg.includes('ไทย') || lowerMsg.includes('ภาษาไทย')) {
-			return 'สวัสดีครับ/ค่ะ! 🙏\n\nเรามีทีมงานที่พูดภาษาไทยพร้อมให้บริการครับ!\n\n📞 โทร: +66 2 0808916\n💬 LINE: @534znjie\n📧 อีเมล: info@kenergy-save.com / info@zera-energy.com\n\nหรือกรอกแบบฟอร์มติดต่อเราได้เลยครับ!\n\nมีคำถามอะไรเพิ่มเติมไหมครับ?'
 		}
 
 		// Default response
