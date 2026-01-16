@@ -74,12 +74,12 @@ export async function GET(request: NextRequest) {
     let devices
     if (ksaveID) {
       devices = await query(
-        'SELECT * FROM device_latest_status WHERE "ksaveID" = $1',
+        'SELECT * FROM device_latest_status WHERE ksaveID = ?',
         [ksaveID]
       )
     } else {
       devices = await query(
-        'SELECT * FROM device_latest_status ORDER BY "lastUpdated" DESC'
+        'SELECT * FROM device_latest_status ORDER BY lastUpdated DESC'
       )
     }
 

@@ -16,7 +16,8 @@ type Machine = {
   metricsMeterNo?: string
 }
 function MachineCard({ m, services, selectedSiteFilter }: { m: Machine; services?: any; selectedSiteFilter?: string }) {
-  const [now, setNow] = useState<Date>(new Date())
+  const [isMounted, setIsMounted] = useState(false)
+  const [now, setNow] = useState<Date | null>(null)
   const [devicePower, setDevicePower] = useState<string | null>(null)
   const [devicePowerValue, setDevicePowerValue] = useState<number | null>(null)
   const [deviceKsave, setDeviceKsave] = useState<string | null>(null)
@@ -28,36 +29,17 @@ function MachineCard({ m, services, selectedSiteFilter }: { m: Machine; services
   const [deviceReportingOk, setDeviceReportingOk] = useState<boolean | null>(null)
   const router = useRouter()
 
-  // Function to save device metrics to database
-  const saveDeviceMetrics = async () => {
-    try {
-      await fetch('/api/device-metrics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ksaveID: m.ksave || m.id,
-          deviceName: m.name,
-          seriesName: seriesName || m.ksave || m.name,
-          seriesNo: seriesNo || localSeriesNo,
-          powerValue: devicePowerValue,
-          location: deviceLocation || m.location,
-          status: m.status,
-          secondsAgo: deviceSecondsAgo,
-          reportingOk: deviceReportingOk,
-          ipAddress: m.ipAddress,
-          beforeMeterNo: m.beforeMeterNo,
-          metricsMeterNo: m.metricsMeterNo
-        })
-      })
-    } catch (e) {
-      console.error('Failed to save device metrics:', e)
-    }
-  }
+  // Ensure component only renders on client after mount
+  useEffect(() => {
+    setIsMounted(true)
+    setNow(new Date())
+  }, [])
 
   useEffect(() => {
+    if (!isMounted) return
     const iv = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(iv)
-  }, [])
+  }, [isMounted])
 
   // fetch per-device latest metrics from Influx (best-effort)
   useEffect(() => {
@@ -167,7 +149,7 @@ function MachineCard({ m, services, selectedSiteFilter }: { m: Machine; services
           <div className="machine-sub" title={deviceLocation ? 'Value from InfluxDB' : (m.location ? 'Value from machine metadata' : (selectedSiteFilter && selectedSiteFilter !== 'All' ? 'Site from current filter' : 'No site tag in InfluxDB'))}>
             Site: {deviceLocation ?? m.location ?? (selectedSiteFilter && selectedSiteFilter !== 'All' ? selectedSiteFilter : '—')}
           </div>
-          <div className="machine-sub" style={{ marginTop: 6 }}>{now.toLocaleString()}</div>
+          <div className="machine-sub" style={{ marginTop: 6 }}>{isMounted && now ? now.toLocaleString() : '—'}</div>
           <div className="machine-sub">
             IP: {m.ipAddress || (m.ksave ? `${m.ksave.toLowerCase()}.local` : '—')}
           </div>

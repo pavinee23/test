@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { query } from '@/lib/mysql'
 
-// ⚠️ Changed from 'edge' to 'nodejs' to support PostgreSQL
+// Changed to nodejs to support MySQL
 export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
@@ -13,11 +13,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing username or password' }, { status: 400 })
     }
 
-    // ตรวจสอบ username/password จาก PostgreSQL database table 'users'
-    // Allow all users to login (not restricted to admin only)
+    // Check username/password from MySQL database table 'users'
     try {
       const users = await query(
-        'SELECT "userID", "userName", "userPassword", "userFULLNAME" FROM users WHERE "userName" = $1 LIMIT 1',
+        'SELECT id, username, password, full_name FROM users WHERE username = ? LIMIT 1',
         [username]
       ) as any[]
 
@@ -27,20 +26,20 @@ export async function POST(req: Request) {
 
       const user = users[0]
 
-      // เช็ค password (ตอนนี้เป็น INT ตรวจสอบแบบตรงๆ)
-      // ⚠️ WARNING: Storing passwords as plain integers is NOT secure for production!
-      if (parseInt(password) !== user.userPassword) {
+      // Check password (currently storing as plain - should use bcrypt in production)
+      // WARNING: Storing passwords as plain text is NOT secure for production!
+      if (password !== user.password) {
         return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
       }
 
-      // Login สำเร็จ - สร้าง token
-      const token = `user-token-${user.userID}-${Date.now()}`
+      // Login successful - create token
+      const token = `user-token-${user.id}-${Date.now()}`
 
       return NextResponse.json({
         token,
-        username: user.userName,
-        userId: user.userID,
-        fullName: user.userFULLNAME
+        username: user.username,
+        userId: user.id,
+        fullName: user.full_name
       })
 
     } catch (dbError: any) {

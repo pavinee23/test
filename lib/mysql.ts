@@ -1,63 +1,66 @@
-import { Pool, PoolClient } from 'pg'
+import mysql from 'mysql2/promise'
 
-// Create a connection pool for PostgreSQL - NO TIMEOUT
-const pool = new Pool({
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.POSTGRES_PORT || '5432'),
-  database: process.env.POSTGRES_DATABASE || 'ksystem_db',
-  user: process.env.POSTGRES_USER || 'ksystem',
-  password: process.env.POSTGRES_PASSWORD || 'Ksave2025Admin',
-  max: 20, // Maximum pool size
-  min: 5, // Keep minimum connections ready
-  idleTimeoutMillis: 0, // NO idle timeout - keep connections alive forever
-  connectionTimeoutMillis: 0, // NO connection timeout - wait forever if needed
-  allowExitOnIdle: false, // Never exit on idle
-  keepAlive: true, // Enable TCP keep-alive
-  keepAliveInitialDelayMillis: 0, // Start keep-alive immediately
+// Create a connection pool for MySQL
+const pool = mysql.createPool({
+  host: process.env.MYSQL_HOST || '127.0.0.1',
+  port: parseInt(process.env.MYSQL_PORT || '3307'),
+  database: process.env.MYSQL_DATABASE || 'user',
+  user: process.env.MYSQL_USER || 'ksystem',
+  password: process.env.MYSQL_PASSWORD || 'Ksave2025Admin',
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
+  connectionTimeout: 30000,
+  enableKeepAlive: true,
 })
 
 // Handle pool errors
 pool.on('error', (err) => {
   console.error('Unexpected database pool error:', err)
-  // Don't exit the process
-})
-
-pool.on('connect', (client) => {
-  console.log('Database connection established')
 })
 
 // Test connection on startup
 ;(async () => {
   try {
-    const client = await pool.connect()
-    console.log('PostgreSQL pool initialized successfully')
-    client.release()
+    const connection = await pool.getConnection()
+    console.log('MySQL pool initialized successfully')
+    connection.release()
   } catch (err) {
-    console.error('Failed to initialize PostgreSQL pool:', err)
+    console.error('Failed to initialize MySQL pool:', err)
   }
 })()
 
 /**
- * Execute PostgreSQL query with automatic retry
- * @param sql SQL query string
+ * Convert PostgreSQL parameterized query ($1, $2, etc.) to MySQL (?) syntax
+ */
+function convertPostgresToMysql(sql: string): string {
+  return sql.replace(/\$\d+/g, '?')
+}
+
+/**
+ * Execute MySQL query with automatic retry
+ * Supports both MySQL (?) and PostgreSQL ($1, $2) syntax
+ * @param sql SQL query string (can use ? or $1, $2 placeholders)
  * @param values Query parameters (optional)
  * @param retries Number of retry attempts (default: 2)
  * @returns Query results
  */
 export async function query(sql: string, values?: any[], retries = 2): Promise<any[]> {
+  // Convert PostgreSQL syntax to MySQL if needed
+  const convertedSql = convertPostgresToMysql(sql)
   let lastError: Error | null = null
 
   for (let attempt = 0; attempt <= retries; attempt++) {
-    let client: PoolClient | null = null
+    let connection: any = null
 
     try {
-      // Get client from pool - NO TIMEOUT
-      client = await pool.connect()
+      // Get connection from pool
+      connection = await pool.getConnection()
 
-      // Execute query - NO TIMEOUT
-      const result = await client.query(sql, values)
+      // Execute query with converted SQL
+      const [results] = await connection.query(convertedSql, values)
 
-      return result.rows
+      return Array.isArray(results) ? results : [results]
 
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
@@ -69,12 +72,12 @@ export async function query(sql: string, values?: any[], retries = 2): Promise<a
       }
 
     } finally {
-      // Always release the client back to the pool
-      if (client) {
+      // Always release the connection back to the pool
+      if (connection) {
         try {
-          client.release()
+          connection.release()
         } catch (releaseError) {
-          console.error('Error releasing client:', releaseError)
+          console.error('Error releasing connection:', releaseError)
         }
       }
     }

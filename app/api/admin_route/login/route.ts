@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     // Query database for admin user authentication from 'users' table
     try {
       const users = await query(
-        'SELECT "userID", "userName", "userPassword", "userFULLNAME" FROM users WHERE LOWER("userName") = $1 LIMIT 1',
+        'SELECT id, username, password, full_name FROM users WHERE LOWER(username) = ? LIMIT 1',
         ['admin']
       ) as any[]
 
@@ -36,8 +36,8 @@ export async function POST(req: Request) {
 
       const user = users[0]
 
-      // Check password (stored as integer)
-      if (parseInt(password) !== user.userPassword) {
+      // Check password
+      if (password !== user.password) {
         return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
       }
 
@@ -55,12 +55,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Failed to reach InfluxDB' }, { status: 502 })
       }
 
-      const token = `admin-token-${user.userID}-${Date.now()}`
+      const token = `admin-token-${user.id}-${Date.now()}`
       return NextResponse.json({
         token,
-        username: user.userName,
-        userId: user.userID,
-        fullName: user.userFULLNAME
+        username: user.username,
+        userId: user.id,
+        fullName: user.full_name
       })
 
     } catch (dbError: any) {

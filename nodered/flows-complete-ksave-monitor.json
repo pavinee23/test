@@ -228,7 +228,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Voltage ÷10",
-        "func": "// Convert Voltage value from Modbus (÷10)\nconst data = msg.payload;\nconst L1 = data[0] / 10;\nconst L2 = data[1] / 10;\nconst L3 = data[2] / 10;\n\n// Store in flow context\nflow.set('before_L1', L1);\nflow.set('before_L2', L2);\nflow.set('before_L3', L3);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `L1:${L1}V L2:${L2}V L3:${L3}V`});\n\nreturn msg;",
+        "func": "// Convert Voltage value from Modbus (÷10)\nconst data = msg.payload;\nconst L1 = data[0] / 10;\nconst L2 = data[1] / 10;\nconst L3 = data[2] / 10;\n\n// Store in flow context\nflow.set('before_L1', L1);\nflow.set('before_L2', L2);\nflow.set('before_L3', L3);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `L1:${L1}V L2:${L2}V L3:${L3}V`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"L1\", payload: L1};\nvar msg2 = {topic: \"L2\", payload: L2};\nvar msg3 = {topic: \"L3\", payload: L3};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -238,7 +238,7 @@
         "x": 690,
         "y": 40,
         "wires": [
-            []
+            ["chart-main-before-voltage"]
         ]
     },
     {
@@ -246,7 +246,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Current ÷100",
-        "func": "// Convert Current value from Modbus (÷100)\nconst data = msg.payload;\nconst I1 = data[0] / 100;\nconst I2 = data[1] / 100;\nconst I3 = data[2] / 100;\n\n// Store in flow context\nflow.set('before_I1', I1);\nflow.set('before_I2', I2);\nflow.set('before_I3', I3);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `I1:${I1}A I2:${I2}A I3:${I3}A`});\n\nreturn msg;",
+        "func": "// Convert Current value from Modbus (÷100)\nconst data = msg.payload;\nconst I1 = data[0] / 100;\nconst I2 = data[1] / 100;\nconst I3 = data[2] / 100;\n\n// Store in flow context\nflow.set('before_I1', I1);\nflow.set('before_I2', I2);\nflow.set('before_I3', I3);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `I1:${I1}A I2:${I2}A I3:${I3}A`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"I1\", payload: I1};\nvar msg2 = {topic: \"I2\", payload: I2};\nvar msg3 = {topic: \"I3\", payload: I3};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -256,7 +256,7 @@
         "x": 690,
         "y": 80,
         "wires": [
-            []
+            ["chart-main-before-current"]
         ]
     },
     {
@@ -264,7 +264,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse P Q S ÷100",
-        "func": "// Convert Power value from Modbus (÷100)\nconst data = msg.payload;\nconst P = data[0] / 100;\nconst Q = data[1] / 100;\nconst S = data[2] / 100;\n\n// Store in flow context\nflow.set('before_P', P);\nflow.set('before_Q', Q);\nflow.set('before_S', S);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `P:${P}kW Q:${Q}kVAR S:${S}kVA`});\n\nreturn msg;",
+        "func": "// Convert Power value from Modbus (÷100)\nconst data = msg.payload;\n\n// Check if data exists and has values\nif (!data || data[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\n\nconst P = data[0] / 100;\nconst Q = data[1] / 100;\nconst S = data[2] / 100;\n\n// Store in flow context\nflow.set('before_P', P);\nflow.set('before_Q', Q);\nflow.set('before_S', S);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `P:${P}kW Q:${Q}kVAR S:${S}kVA`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"P (kW)\", payload: P};\nvar msg2 = {topic: \"Q (kVAR)\", payload: Q};\nvar msg3 = {topic: \"S (kVA)\", payload: S};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -274,7 +274,7 @@
         "x": 680,
         "y": 120,
         "wires": [
-            []
+            ["chart-main-before-power"]
         ]
     },
     {
@@ -282,7 +282,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse PF ÷100",
-        "func": "// Convert Power Factor value from Modbus (÷100)\nconst PF = msg.payload[0] / 100;\n\n// Store in flow context\nflow.set('before_PF', PF);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `PF:${PF}`});\n\nreturn msg;",
+        "func": "// Convert Power Factor value from Modbus (÷100)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst PF = msg.payload[0] / 100;\n\n// Store in flow context\nflow.set('before_PF', PF);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `PF:${PF}`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -300,7 +300,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse THD ÷10",
-        "func": "// Convert THD value from Modbus (÷10)\nconst THD = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('before_THD', THD);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `THD:${THD}%`});\n\nreturn msg;",
+        "func": "// Convert THD value from Modbus (÷10)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst THD = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('before_THD', THD);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `THD:${THD}%`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -318,7 +318,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Frequency ÷10",
-        "func": "// Convert Frequency value from Modbus (÷10)\nconst F = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('before_F', F);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `Freq:${F}Hz`});\n\nreturn msg;",
+        "func": "// Convert Frequency value from Modbus (÷10)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst F = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('before_F', F);\n\nnode.status({fill: \"green\", shape: \"dot\", text: `Freq:${F}Hz`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -546,7 +546,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Voltage ÷10",
-        "func": "// Convert Voltage value from Modbus (÷10)\nconst data = msg.payload;\nconst L1 = data[0] / 10;\nconst L2 = data[1] / 10;\nconst L3 = data[2] / 10;\n\n// Store in flow context\nflow.set('metrics_L1', L1);\nflow.set('metrics_L2', L2);\nflow.set('metrics_L3', L3);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `L1:${L1}V L2:${L2}V L3:${L3}V`});\n\nreturn msg;",
+        "func": "// Convert Voltage value from Modbus (÷10)\nconst data = msg.payload;\nconst L1 = data[0] / 10;\nconst L2 = data[1] / 10;\nconst L3 = data[2] / 10;\n\n// Store in flow context\nflow.set('metrics_L1', L1);\nflow.set('metrics_L2', L2);\nflow.set('metrics_L3', L3);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `L1:${L1}V L2:${L2}V L3:${L3}V`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"L1\", payload: L1};\nvar msg2 = {topic: \"L2\", payload: L2};\nvar msg3 = {topic: \"L3\", payload: L3};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -556,7 +556,7 @@
         "x": 690,
         "y": 320,
         "wires": [
-            []
+            ["chart-main-metrics-voltage"]
         ]
     },
     {
@@ -564,7 +564,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Current ÷100",
-        "func": "// Convert Current value from Modbus (÷100)\nconst data = msg.payload;\nconst I1 = data[0] / 100;\nconst I2 = data[1] / 100;\nconst I3 = data[2] / 100;\n\n// Store in flow context\nflow.set('metrics_I1', I1);\nflow.set('metrics_I2', I2);\nflow.set('metrics_I3', I3);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `I1:${I1}A I2:${I2}A I3:${I3}A`});\n\nreturn msg;",
+        "func": "// Convert Current value from Modbus (÷100)\nconst data = msg.payload;\nconst I1 = data[0] / 100;\nconst I2 = data[1] / 100;\nconst I3 = data[2] / 100;\n\n// Store in flow context\nflow.set('metrics_I1', I1);\nflow.set('metrics_I2', I2);\nflow.set('metrics_I3', I3);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `I1:${I1}A I2:${I2}A I3:${I3}A`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"I1\", payload: I1};\nvar msg2 = {topic: \"I2\", payload: I2};\nvar msg3 = {topic: \"I3\", payload: I3};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -574,7 +574,7 @@
         "x": 690,
         "y": 360,
         "wires": [
-            []
+            ["chart-main-metrics-current"]
         ]
     },
     {
@@ -582,7 +582,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse P Q S ÷100",
-        "func": "// Convert Power value from Modbus (÷100)\nconst data = msg.payload;\nconst P = data[0] / 100;\nconst Q = data[1] / 100;\nconst S = data[2] / 100;\n\n// Store in flow context\nflow.set('metrics_P', P);\nflow.set('metrics_Q', Q);\nflow.set('metrics_S', S);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `P:${P}kW Q:${Q}kVAR S:${S}kVA`});\n\nreturn msg;",
+        "func": "// Convert Power value from Modbus (÷100)\nconst data = msg.payload;\n\n// Check if data exists and has values\nif (!data || data[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\n\nconst P = data[0] / 100;\nconst Q = data[1] / 100;\nconst S = data[2] / 100;\n\n// Store in flow context\nflow.set('metrics_P', P);\nflow.set('metrics_Q', Q);\nflow.set('metrics_S', S);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `P:${P}kW Q:${Q}kVAR S:${S}kVA`});\n\n// Send to UI chart with series labels\nvar msg1 = {topic: \"P (kW)\", payload: P};\nvar msg2 = {topic: \"Q (kVAR)\", payload: Q};\nvar msg3 = {topic: \"S (kVA)\", payload: S};\n\nreturn [[msg1, msg2, msg3]];",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -592,7 +592,7 @@
         "x": 680,
         "y": 400,
         "wires": [
-            []
+            ["chart-main-metrics-power"]
         ]
     },
     {
@@ -600,7 +600,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse PF ÷100",
-        "func": "// Convert Power Factor value from Modbus (÷100)\nconst PF = msg.payload[0] / 100;\n\n// Store in flow context\nflow.set('metrics_PF', PF);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `PF:${PF}`});\n\nreturn msg;",
+        "func": "// Convert Power Factor value from Modbus (÷100)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst PF = msg.payload[0] / 100;\n\n// Store in flow context\nflow.set('metrics_PF', PF);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `PF:${PF}`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -618,7 +618,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse THD ÷10",
-        "func": "// Convert THD value from Modbus (÷10)\nconst THD = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('metrics_THD', THD);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `THD:${THD}%`});\n\nreturn msg;",
+        "func": "// Convert THD value from Modbus (÷10)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst THD = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('metrics_THD', THD);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `THD:${THD}%`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -636,7 +636,7 @@
         "type": "function",
         "z": "tab-ksave-complete",
         "name": "Parse Frequency ÷10",
-        "func": "// Convert Frequency value from Modbus (÷10)\nconst F = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('metrics_F', F);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `Freq:${F}Hz`});\n\nreturn msg;",
+        "func": "// Convert Frequency value from Modbus (÷10)\nif (!msg.payload || msg.payload[0] === undefined) {\n    node.status({fill: \"yellow\", shape: \"ring\", text: \"No data\"});\n    return null;\n}\nconst F = msg.payload[0] / 10;\n\n// Store in flow context\nflow.set('metrics_F', F);\n\nnode.status({fill: \"blue\", shape: \"dot\", text: `Freq:${F}Hz`});\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -767,7 +767,7 @@
         "type": "ui_template",
         "z": "tab-ksave-complete",
         "group": "ui-group-before",
-        "name": "K-SAVE Power Before",
+        "name": "KSAVE01 Power Before",
         "order": 1,
         "width": 12,
         "height": 12,
@@ -827,7 +827,7 @@
         "type": "ui_template",
         "z": "tab-ksave-complete",
         "group": "ui-group-metrics",
-        "name": "K-SAVE Power Metrics",
+        "name": "KSAVE01 Power Metrics",
         "order": 1,
         "width": 12,
         "height": 12,
@@ -1413,14 +1413,14 @@
         "serialDatabits": "8",
         "serialStopbits": "1",
         "serialParity": "none",
-        "serialConnectionDelay": "100",
+        "serialConnectionDelay": "500",
         "serialAsciiResponseStartDelimiter": "0x3A",
         "unit_id": "1",
-        "commandDelay": "1",
-        "clientTimeout": "1000",
+        "commandDelay": "100",
+        "clientTimeout": "3000",
         "reconnectOnTimeout": true,
-        "reconnectTimeout": "2000",
-        "parallelUnitIdsAllowed": true
+        "reconnectTimeout": "5000",
+        "parallelUnitIdsAllowed": false
     },
     {
         "id": "inject-before-detail",

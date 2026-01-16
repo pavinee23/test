@@ -1,14 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server'
-import { authenticateUser } from '@/lib/mysql-user'
+import { authenticateUser, recordLoginLog } from '@/lib/mysql-user'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}))
-    const { username, password, site } = body || {}
+    const { username, password, site, pageName } = body || {}
 
-    console.log('📝 User login attempt:', { username, site })
+    console.log('📝 User login attempt:', { username, site, pageName })
 
     // Validate input
     if (!username || !password) {
@@ -32,6 +32,9 @@ export async function POST(req: NextRequest) {
         error: 'Username, Password หรือ Site ไม่ถูกต้อง'
       }, { status: 401 })
     }
+
+    // Record login log to database
+    await recordLoginLog(user.userId, pageName || '/sites')
 
     // Generate simple token (JWT can be used for production)
     const token = Buffer.from(`${user.userId}-${Date.now()}-${Math.random()}`).toString('base64')

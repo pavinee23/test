@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { query } from '@/lib/mysql'
+import { authenticateUser, recordLoginLog } from '@/lib/mysql-user'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { username, password } = body
+    const { username, password, pageName } = body
 
     if (!username || !password) {
       return NextResponse.json(
@@ -21,34 +21,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Query database for admin user authentication from 'users' table
-    const result = await query(
-      'SELECT "userID", "userName", "userFULLNAME" FROM users WHERE LOWER("userName") = $1 AND "userPassword" = $2',
-      ['admin', parseInt(password)]
-    )
+    // Authenticate user (admin user)
+    const user = await authenticateUser(username, password)
 
-    if (result && result.length > 0) {
-      const user = result[0]
-
-      // Generate a simple token (in production use JWT or proper session)
-      const token = btoa(`${user.userName}:${user.userID}:${Date.now()}`)
-
-      return NextResponse.json({
-        success: true,
-        token,
-        message: 'Login successful',
-        user: {
-          id: user.userID,
-          username: user.userName,
-          fullname: user.userFULLNAME
-        }
-      })
-    } else {
+    if (!user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       )
     }
+
+    // Record login log to database
+    await recordLoginLog(user.userId, pageName || '/admin')
+
+    // Generate a simple token (in production use JWT or proper session)
+    const token = btoa(`${user.userName}:${user.userId}:${Date.now()}`)
+
+    console.log(`✅ Admin login successful: ${user.userName} (${user.name})`)
+
+    return NextResponse.json({
+      success: true,
+      token,
+      message: 'Login successful',
+      user: {
+        id: user.userId,
+        username: user.userName,
+        fullname: user.name
+      }
+    })
   } catch (error) {
     console.error('Admin login error:', error)
     return NextResponse.json(

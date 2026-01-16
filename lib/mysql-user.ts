@@ -135,5 +135,31 @@ export async function getUserById(userId: number): Promise<any | null> {
   }
 }
 
+/**
+ * Record login log to U_log_login table
+ * @param userId User ID
+ * @param pageName Page name where user logged in
+ * @returns boolean true if logged successfully
+ */
+export async function recordLoginLog(userId: number, pageName: string = 'home'): Promise<boolean> {
+  const sql = `
+    INSERT INTO U_log_login (userID, login_timestamp, page_log, create_by)
+    VALUES (?, NOW(), ?, 'Auto system')
+  `
+
+  const connection = await pool.getConnection()
+
+  try {
+    await connection.execute(sql, [userId, pageName])
+    console.log(`✅ Login logged for userId ${userId} at page ${pageName}`)
+    return true
+  } catch (err: any) {
+    console.error('❌ Failed to record login log:', err.message)
+    return false
+  } finally {
+    connection.release()
+  }
+}
+
 // Export pool for advanced usage
 export { pool }

@@ -7,3 +7,9 @@ tunnels:
     inspect: true
     # Uncomment for custom domain (requires paid plan)
     # hostname: your-company.ngrok.app
+  phpmyadmin:
+    proto: http
+    addr: 8081
+    inspect: true
+    # Uncomment for custom domain (requires paid plan)
+    # hostname: phpmyadmin.your-company.ngrok.app
