@@ -14,6 +14,7 @@ type Machine = {
   ipAddress?: string
   beforeMeterNo?: string
   metricsMeterNo?: string
+  phone?: string
 }
 function MachineCard({ m, services, selectedSiteFilter }: { m: Machine; services?: any; selectedSiteFilter?: string }) {
   const [isMounted, setIsMounted] = useState(false)
@@ -158,6 +159,9 @@ function MachineCard({ m, services, selectedSiteFilter }: { m: Machine; services
           </div>
           <div className="machine-sub">
             Metrics Meter No: {m.metricsMeterNo ?? '—'}
+          </div>
+          <div className="machine-sub">
+            Phone: {m.phone ?? '—'}
           </div>
         </div>
 
@@ -327,7 +331,8 @@ export default function SitesPage() {
         location: device.location,
         ipAddress: device.ipAddress,
         beforeMeterNo: device.beforeMeterNo,
-        metricsMeterNo: device.metricsMeterNo
+        metricsMeterNo: device.metricsMeterNo,
+        phone: device.phone
       }
     })
     

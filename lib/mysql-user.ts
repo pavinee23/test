@@ -1,18 +1,24 @@
 import mysql from 'mysql2/promise'
 
+// Debug: Log environment variables
+console.log('🔍 MySQL Connection Config:', {
+  host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_PORT,
+  user: process.env.MYSQL_USER,
+  database: process.env.MYSQL_DATABASE,
+  password_set: !!process.env.MYSQL_PASSWORD
+})
+
 // Create MySQL connection pool for user database
 const pool = mysql.createPool({
-  host: process.env.MYSQL_USER_HOST || process.env.MYSQL_HOST || 'localhost',
-  port: parseInt(process.env.MYSQL_USER_PORT || process.env.MYSQL_PORT || '3307'),
-  user: process.env.MYSQL_USER_USER || process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_USER_PASSWORD || process.env.MYSQL_PASSWORD || 'Zera2025data',
-  database: process.env.MYSQL_USER_DATABASE || process.env.MYSQL_DATABASE || 'user',
+  host: process.env.MYSQL_HOST || 'localhost',
+  port: parseInt(process.env.MYSQL_PORT || '3307'),
+  user: process.env.MYSQL_USER || 'ksystem',
+  password: process.env.MYSQL_PASSWORD || 'Ksave2025Admin',
+  database: process.env.MYSQL_DATABASE || 'ksystem',
   waitForConnections: true,
-  connectionLimit: 5,
+  connectionLimit: 10,
   queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-  connectTimeout: 10000, // 10 seconds for Vercel compatibility
   timezone: '+00:00'
 })
 

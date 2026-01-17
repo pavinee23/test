@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   port: parseInt(process.env.MYSQL_CUSTOMER_PORT || process.env.MYSQL_PORT || '3307'),
   user: process.env.MYSQL_CUSTOMER_USER || process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_CUSTOMER_PASSWORD || process.env.MYSQL_PASSWORD || 'Zera2025data',
-  database: process.env.MYSQL_CUSTOMER_DATABASE || 'customer',
+  database: process.env.MYSQL_CUSTOMER_DATABASE || 'ksystem',
   waitForConnections: true,
   connectionLimit: 5,
   queueLimit: 0,

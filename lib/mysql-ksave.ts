@@ -5,11 +5,8 @@ const pool = mysql.createPool({
   port: Number(process.env.MYSQL_PORT || 3307),
   user: process.env.MYSQL_USER || 'ksystem',
   password: process.env.MYSQL_PASSWORD || 'Ksave2025Admin',
-  database: 'ksave',
-  connectionLimit: 5,
-  connectTimeout: 10000, // 10 seconds for Vercel compatibility
-  enableKeepAlive: true,
-  keepAliveInitialDelayMs: 0,
+  database: 'ksystem',
+  connectionLimit: 10,
   timezone: '+00:00'
 })
 
@@ -33,7 +30,7 @@ export async function getAllDevices(): Promise<any[]> {
   try {
     const devices = await queryKsave(
       `SELECT deviceID, deviceName, ksaveID, location, status, ipAddress, 
-              beforeMeterNo, metricsMeterNo, created_at, updated_at
+              beforeMeterNo, metricsMeterNo, phone, created_at, updated_at
        FROM devices 
        ORDER BY deviceID ASC`
     )
