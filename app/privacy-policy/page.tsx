@@ -381,7 +381,7 @@ export default function PrivacyPolicyPage() {
 							...(language === 'en' ? styles.langButtonActive : {})
 						}}
 					>
-						🇬🇧 EN
+						<img src="https://flagcdn.com/20x15/gb.png" alt="EN" style={{ width: '20px', height: '15px', marginRight: '6px' }} /> EN
 					</button>
 					<button
 						onClick={() => setLanguage('th')}
@@ -390,7 +390,7 @@ export default function PrivacyPolicyPage() {
 							...(language === 'th' ? styles.langButtonActive : {})
 						}}
 					>
-						🇹🇭 TH
+						<img src="https://flagcdn.com/20x15/th.png" alt="TH" style={{ width: '20px', height: '15px', marginRight: '6px' }} /> TH
 					</button>
 					<button
 						onClick={() => setLanguage('ko')}
@@ -399,7 +399,7 @@ export default function PrivacyPolicyPage() {
 							...(language === 'ko' ? styles.langButtonActive : {})
 						}}
 					>
-						🇰🇷 KO
+						<img src="https://flagcdn.com/20x15/kr.png" alt="KO" style={{ width: '20px', height: '15px', marginRight: '6px' }} /> KO
 					</button>
 					<button
 						onClick={() => setLanguage('zh')}
@@ -408,7 +408,7 @@ export default function PrivacyPolicyPage() {
 							...(language === 'zh' ? styles.langButtonActive : {})
 						}}
 					>
-						🇨🇳 ZH
+						<img src="https://flagcdn.com/20x15/cn.png" alt="ZH" style={{ width: '20px', height: '15px', marginRight: '6px' }} /> ZH
 					</button>
 				</div>
 
