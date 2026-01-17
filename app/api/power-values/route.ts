@@ -10,7 +10,7 @@ export const maxDuration = 10
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const body = await req.json().catch(() => ({}))
     const {
       device,
       ksaveID,
