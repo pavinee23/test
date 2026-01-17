@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}))
     // simple validation
-    const { name, ksave, location, phone } = body || {}
+    const { name, ksave, location, phone, email, password } = body || {}
     if (!name || !ksave) return NextResponse.json({ error: 'name and ksave are required' }, { status: 400 })
 
     // Save to MySQL database FIRST (primary data store)
@@ -23,9 +23,9 @@ export async function POST(req: Request) {
         location || '', 
         phone || '', 
         'OK',
-        '', // U_email - empty string as default
-        '', // P_email - empty string as default
-        ''  // pass_phone - empty string as default
+        email || '', // U_email
+        email || '', // P_email (same as U_email)
+        password || ''  // pass_phone
       ])
 
       // Fetch the inserted device
@@ -157,7 +157,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}))
-    const { deviceName, ksaveID, ipAddress, location, phone, status, beforeMeterNo, metricsMeterNo } = body
+    const { deviceName, ksaveID, ipAddress, location, phone, email, password, status, beforeMeterNo, metricsMeterNo } = body
 
     if (!deviceName || !ksaveID) {
       return NextResponse.json({
@@ -173,12 +173,28 @@ export async function PUT(req: Request) {
         ipAddress = ?,
         location = ?,
         phone = ?,
+        U_email = ?,
+        P_email = ?,
+        pass_phone = ?,
         status = ?,
         beforeMeterNo = ?,
         metricsMeterNo = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE deviceID = ?
-    `, [deviceName, ksaveID, ipAddress || null, location || null, phone || '', status || 'OK', beforeMeterNo || null, metricsMeterNo || null, parseInt(deviceID)])
+    `, [
+      deviceName, 
+      ksaveID, 
+      ipAddress || null, 
+      location || '', 
+      phone || '', 
+      email || '',
+      email || '',
+      password || '',
+      status || 'OK', 
+      beforeMeterNo || null, 
+      metricsMeterNo || null, 
+      parseInt(deviceID)
+    ])
 
     const result = await query(`
       SELECT deviceID, deviceName, ksaveID, ipAddress, location, phone, status, beforeMeterNo, metricsMeterNo, created_at, updated_at

@@ -8,6 +8,8 @@ export default function AddMachinePage() {
   const [ksave, setKsave] = useState('')
   const [location, setLocation] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [saving, setSaving] = useState(false)
   const [result, setResult] = useState<any | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +23,8 @@ export default function AddMachinePage() {
   const [editKsave, setEditKsave] = useState('')
   const [editLocation, setEditLocation] = useState('')
   const [editPhone, setEditPhone] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [editPassword, setEditPassword] = useState('')
   const [editStatus, setEditStatus] = useState('')
   const [updating, setUpdating] = useState(false)
 
@@ -63,7 +67,7 @@ export default function AddMachinePage() {
       const res = await fetch('/api/admin_route/machines', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, ksave, location, phone })
+        body: JSON.stringify({ name, ksave, location, phone, email, password })
       })
 
       // read response text for better error messages
@@ -96,6 +100,8 @@ export default function AddMachinePage() {
       setKsave('')
       setLocation('')
       setPhone('')
+      setEmail('')
+      setPassword('')
       return body
     } catch (err: any) {
       const msg = err?.message || String(err)
@@ -123,6 +129,8 @@ export default function AddMachinePage() {
     setEditKsave(machine.ksaveID || '')
     setEditLocation(machine.location || '')
     setEditPhone(machine.phone || '')
+    setEditEmail(machine.U_email || '')
+    setEditPassword(machine.pass_phone || '')
     setEditStatus(machine.status || 'OK')
   }
 
@@ -132,6 +140,8 @@ export default function AddMachinePage() {
     setEditKsave('')
     setEditLocation('')
     setEditPhone('')
+    setEditEmail('')
+    setEditPassword('')
     setEditStatus('')
   }
 
@@ -150,6 +160,8 @@ export default function AddMachinePage() {
           ksaveID: editKsave,
           location: editLocation,
           phone: editPhone,
+          email: editEmail,
+          password: editPassword,
           status: editStatus
         })
       })
@@ -192,17 +204,17 @@ export default function AddMachinePage() {
             {success && <div style={{ marginBottom: 12, padding: 10, background: '#ecfccb', border: '1px solid #86efac', color: '#065f46', borderRadius: 6 }}>{success}</div>}
 
         <div style={{ marginBottom: 8 }}>
-          <label style={{ display: 'block', fontSize: 13 }}>Machine/KSave No.</label>
+          <label style={{ display: 'block', fontSize: 13 }}>KSave Name Service</label>
           <input className="k-input" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div style={{ marginBottom: 8 }}>
-          <label style={{ display: 'block', fontSize: 13 }}>Machine/Series no.</label>
+          <label style={{ display: 'block', fontSize: 13 }}>KSave ID</label>
           <input className="k-input" value={ksave} onChange={(e) => setKsave(e.target.value)} />
         </div>
 
         <div style={{ marginBottom: 8 }}>
-          <label style={{ display: 'block', fontSize: 13 }}>Location / Site.</label>
+          <label style={{ display: 'block', fontSize: 13 }}>Location / Site</label>
           <input className="k-input" value={location} onChange={(e) => setLocation(e.target.value)} />
         </div>
 
@@ -211,9 +223,19 @@ export default function AddMachinePage() {
           <input className="k-input" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Optional" />
         </div>
 
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ display: 'block', fontSize: 13 }}>Email</label>
+          <input className="k-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Optional" />
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ display: 'block', fontSize: 13 }}>Password</label>
+          <input className="k-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Optional" />
+        </div>
+
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           <button className="k-btn k-btn-primary" type="submit" disabled={saving || !name.trim() || !ksave.trim()}>{saving ? 'Saving...' : 'Create'}</button>
-          <button className="k-btn k-btn-ghost" type="button" onClick={() => { setName(''); setKsave(''); setLocation(''); setPhone(''); setResult(null); setError(null) }}>Reset</button>
+          <button className="k-btn k-btn-ghost" type="button" onClick={() => { setName(''); setKsave(''); setLocation(''); setPhone(''); setEmail(''); setPassword(''); setResult(null); setError(null) }}>Reset</button>
         </div>
 
         {error && (
