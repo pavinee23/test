@@ -146,22 +146,43 @@ export default function HomePage() {
 				<div className="container py-5">
 					<h2 className="section-title text-white">Contact Us</h2>
 					<div className="row g-4">
+						{/* Thailand Office */}
 						<div className="col-lg-6">
 							<div className="contact-card">
-								<h3>🇹🇭 Thailand Office</h3>
-								<p><strong>Address:</strong><br />123/45 Energy Tower, Bangkok 10110</p>
-								<p><strong>Phone:</strong> <a href="tel:+66123456789">+66 12 345 6789</a></p>
-								<p><strong>Email:</strong> <a href="mailto:thailand@kenergy-save.com">thailand@kenergy-save.com</a></p>
-								<p><strong>Hours:</strong> Mon-Fri 9:00-18:00</p>
+								<h3><i className="bi bi-geo-alt-fill me-2"></i>🇹🇭 Thailand Office</h3>
+								<div className="text-start">
+									<p className="fw-bold mb-3">K Energy Save Co., Ltd.</p>
+									<p className="mb-2"><i className="bi bi-building me-2"></i>84 Chaloem Phrakiat Rama 9 Soi 34</p>
+									<p className="mb-3">Nong Bon, Prawet<br />Bangkok 10250, Thailand</p>
+									<p className="mb-2">
+										<i className="bi bi-telephone-fill me-2"></i>
+										<a href="tel:+6620808916">+66 2 080 8916</a>
+									</p>
+									<p className="mb-0">
+										<i className="bi bi-envelope-fill me-2"></i>
+										<a href="mailto:info@kenergy-save.com">info@kenergy-save.com</a>
+									</p>
+								</div>
 							</div>
 						</div>
+						
+						{/* Korea Office */}
 						<div className="col-lg-6">
 							<div className="contact-card">
-								<h3>🇰🇷 Korea Office</h3>
-								<p><strong>Address:</strong><br />Seoul, South Korea</p>
-								<p><strong>Phone:</strong> <a href="tel:+82123456789">+82 12 345 6789</a></p>
-								<p><strong>Email:</strong> <a href="mailto:korea@kenergy-save.com">korea@kenergy-save.com</a></p>
-								<p><strong>Hours:</strong> Mon-Fri 9:00-18:00</p>
+								<h3><i className="bi bi-geo-alt-fill me-2"></i>🇰🇷 Korea Office</h3>
+								<div className="text-start">
+									<p className="fw-bold mb-3">Zera-Energy</p>
+									<p className="mb-2"><i className="bi bi-building me-2"></i>2F, 16-10, 166beon-gil</p>
+									<p className="mb-3">Elseso-ro, Gunpo-si<br />Gyeonggi-do, Korea</p>
+									<p className="mb-2">
+										<i className="bi bi-telephone-fill me-2"></i>
+										<a href="tel:+82314271380">+82 31-427-1380</a>
+									</p>
+									<p className="mb-0">
+										<i className="bi bi-envelope-fill me-2"></i>
+										<a href="mailto:info@zera-energy.com">info@zera-energy.com</a>
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
