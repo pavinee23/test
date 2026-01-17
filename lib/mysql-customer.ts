@@ -2,27 +2,22 @@ import mysql from 'mysql2/promise'
 
 // Create MySQL connection pool for customer database
 const pool = mysql.createPool({
-  host: 'localhost', // Docker container mapped to localhost
-  port: 3307, // Docker mapped port
-  user: 'root',
-  password: 'Zera2025data',
-  database: 'customer',
+  host: process.env.MYSQL_CUSTOMER_HOST || process.env.MYSQL_HOST || 'localhost',
+  port: parseInt(process.env.MYSQL_CUSTOMER_PORT || process.env.MYSQL_PORT || '3307'),
+  user: process.env.MYSQL_CUSTOMER_USER || process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_CUSTOMER_PASSWORD || process.env.MYSQL_PASSWORD || 'Zera2025data',
+  database: process.env.MYSQL_CUSTOMER_DATABASE || 'customer',
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
+  connectTimeout: 10000, // 10 seconds for Vercel compatibility
+  timezone: '+00:00'
 })
 
-// Test connection on initialization
-pool.getConnection()
-  .then(connection => {
-    console.log('✅ MySQL customer database connection pool initialized successfully')
-    connection.release()
-  })
-  .catch(err => {
-    console.error('❌ Failed to initialize MySQL customer database connection pool:', err.message)
-  })
+// Note: Connection test removed for serverless compatibility
+// Connections are created on-demand when needed
 
 /**
  * Execute MySQL query with automatic connection management

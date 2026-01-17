@@ -10,8 +10,9 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 5,
   queueLimit: 0,
-  connectionTimeout: 30000,
+  connectTimeout: 10000, // 10 seconds for Vercel compatibility
   enableKeepAlive: true,
+  timezone: '+00:00'
 })
 
 // Handle pool errors
@@ -19,15 +20,8 @@ pool.on('error', (err) => {
   console.error('Unexpected database pool error:', err)
 })
 
-// Test connection on startup
-;(async () => {
-  try {
-    const connection = await pool.getConnection()
-    console.log('MySQL pool initialized successfully')
-    connection.release()
-  } catch (err) {
-    console.error('Failed to initialize MySQL pool:', err)
-  }
+// Note: Connection test removed for serverless compatibility
+// Connections are created on-demand when needed
 })()
 
 /**

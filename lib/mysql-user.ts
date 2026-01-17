@@ -2,27 +2,22 @@ import mysql from 'mysql2/promise'
 
 // Create MySQL connection pool for user database
 const pool = mysql.createPool({
-  host: 'localhost', // Docker container mapped to localhost
-  port: 3307, // Docker mapped port
-  user: 'root',
-  password: 'Zera2025data',
-  database: 'user',
+  host: process.env.MYSQL_USER_HOST || process.env.MYSQL_HOST || 'localhost',
+  port: parseInt(process.env.MYSQL_USER_PORT || process.env.MYSQL_PORT || '3307'),
+  user: process.env.MYSQL_USER_USER || process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_USER_PASSWORD || process.env.MYSQL_PASSWORD || 'Zera2025data',
+  database: process.env.MYSQL_USER_DATABASE || process.env.MYSQL_DATABASE || 'user',
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
+  connectTimeout: 10000, // 10 seconds for Vercel compatibility
+  timezone: '+00:00'
 })
 
-// Test connection on initialization
-pool.getConnection()
-  .then(connection => {
-    console.log('✅ MySQL user database connection pool initialized successfully')
-    connection.release()
-  })
-  .catch(err => {
-    console.error('❌ Failed to initialize MySQL user database connection pool:', err.message)
-  })
+// Note: Connection test removed for serverless compatibility
+// Connections are created on-demand when needed
 
 /**
  * Execute MySQL query with automatic connection management
@@ -31,13 +26,18 @@ pool.getConnection()
  * @returns Query results
  */
 export async function queryUser(sql: string, values?: any[]): Promise<any[]> {
-  const connection = await pool.getConnection()
-
+  let connection
   try {
+    connection = await pool.getConnection()
     const [rows] = await connection.execute(sql, values)
     return rows as any[]
+  } catch (error: any) {
+    console.error('❌ MySQL query error:', error.message)
+    throw new Error(`Database query failed: ${error.message}`)
   } finally {
-    connection.release()
+    if (connection) {
+      connection.release()
+    }
   }
 }
 
@@ -85,8 +85,13 @@ export async function authenticateUser(
       return null
     }
 
-    // If site is provided, check if it matches
-    if (site && user.site !== site) {
+    // If site is provided, check if it matches (case-insensitive)
+    if (site && user.site) {
+      if (user.site.toLowerCase() !== site.toLowerCase()) {
+        return null
+      }
+    } else if (site && !user.site) {
+      // User has no site in database but site is required
       return null
     }
 
@@ -143,14 +148,17 @@ export async function getUserById(userId: number): Promise<any | null> {
  */
 export async function recordLoginLog(userId: number, pageName: string = 'home'): Promise<boolean> {
   const sql = `
-    INSERT INTO U_log_login (userID, login_timestamp, page_log, create_by)
-    VALUES (?, NOW(), ?, 'Auto system')
+    INSERT INTO U_log_login (userID, name, login_timestamp, page_log, create_by)
+    SELECT ?, name, NOW(), ?, 'Auto system'
+    FROM user_list
+    WHERE userId = ?
+    LIMIT 1
   `
 
   const connection = await pool.getConnection()
 
   try {
-    await connection.execute(sql, [userId, pageName])
+    await connection.execute(sql, [userId, pageName, userId])
     console.log(`✅ Login logged for userId ${userId} at page ${pageName}`)
     return true
   } catch (err: any) {

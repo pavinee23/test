@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { query } from '@/lib/mysql'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10
 
 export async function POST(req: Request) {
   try {

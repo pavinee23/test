@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { authenticateUser, recordLoginLog } from '@/lib/mysql-user'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10 // Maximum duration for Vercel serverless function (seconds)
 
 export async function POST(req: NextRequest) {
   try {

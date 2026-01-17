@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { insertCustomerContact } from '@/lib/mysql-customer'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10
 
 export async function POST(req: NextRequest) {
 	try {

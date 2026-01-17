@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { query } from '@/lib/mysql'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10
 
 /**
  * GET /api/admin_route/users

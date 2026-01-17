@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server'
 import { getUserById } from '@/lib/mysql-user'
 
 export const runtime = 'nodejs'
+export const maxDuration = 10
 
 export async function POST(req: NextRequest) {
   try {

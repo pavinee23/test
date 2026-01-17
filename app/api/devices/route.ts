@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { query } from '@/lib/mysql'
+import { getAllDevices } from '@/lib/mysql-ksave'
+
+export const runtime = 'nodejs'
+export const maxDuration = 10
 
 export async function GET(request: NextRequest) {
   try {
-    // Query with built-in retry mechanism
-    const devices = await query(
-      'SELECT "deviceID", "deviceName", "ksaveID", "ipAddress", location, status, "beforeMeterNo", "metricsMeterNo" FROM devices ORDER BY "deviceID"'
-    )
+    // Query from ksave.devices table
+    const devices = await getAllDevices()
 
     return NextResponse.json({
       success: true,

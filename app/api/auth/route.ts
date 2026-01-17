@@ -3,6 +3,7 @@ import { query } from '@/lib/mysql'
 
 // Changed to nodejs to support MySQL
 export const runtime = 'nodejs'
+export const maxDuration = 10
 
 export async function POST(req: Request) {
   try {
