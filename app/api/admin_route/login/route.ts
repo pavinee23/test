@@ -16,19 +16,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing username or password' }, { status: 400 })
     }
 
-    // Only allow 'admin' username for admin system
-    if (username.toLowerCase() !== 'admin') {
-      return NextResponse.json(
-        { error: 'Access denied. Only admin users are allowed.' },
-        { status: 403 }
-      )
-    }
-
-    // Query database for admin user authentication from 'users' table
+    // Query database for admin user authentication from 'user_list' table
     try {
       const users = await query(
-        'SELECT id, username, password, full_name FROM users WHERE LOWER(username) = ? LIMIT 1',
-        ['admin']
+        'SELECT userId, userName, password, name, email, site, typeID FROM user_list WHERE userName = ? LIMIT 1',
+        [username]
       ) as any[]
 
       if (!users || users.length === 0) {
@@ -42,26 +34,28 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 })
       }
 
+      // Check if user is admin (typeID 1 or 2)
+      if (user.typeID !== 1 && user.typeID !== 2) {
+        return NextResponse.json({ error: 'Access denied. Admin privileges required.' }, { status: 403 })
+      }
+
       // Verify InfluxDB is reachable (health endpoint)
       try {
         const healthRes = await fetch(`${INFLUX_BASE}/health`)
         if (!healthRes.ok) {
-          return NextResponse.json({ error: 'InfluxDB is not healthy or unreachable' }, { status: 502 })
-        }
-        const health = await healthRes.json().catch(() => ({}))
-        if (health && health.status && health.status !== 'pass') {
-          return NextResponse.json({ error: 'InfluxDB reports unhealthy' }, { status: 502 })
+          console.warn('⚠️ InfluxDB health check failed, but proceeding with login')
         }
       } catch (e) {
-        return NextResponse.json({ error: 'Failed to reach InfluxDB' }, { status: 502 })
+        console.warn('⚠️ Failed to reach InfluxDB, but proceeding with login')
       }
 
-      const token = `admin-token-${user.id}-${Date.now()}`
+      const token = `admin-token-${user.userId}-${Date.now()}`
       return NextResponse.json({
         token,
-        username: user.username,
-        userId: user.id,
-        fullName: user.full_name
+        username: user.userName,
+        userId: user.userId,
+        name: user.name,
+        typeID: user.typeID
       })
 
     } catch (dbError: any) {
