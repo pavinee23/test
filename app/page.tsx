@@ -149,7 +149,10 @@ export default function HomePage() {
 						{/* Thailand Office */}
 						<div className="col-lg-6">
 							<div className="contact-card">
-								<h3><i className="bi bi-geo-alt-fill me-2"></i>🇹🇭 Thailand Office</h3>
+								<h3>
+									<i className="bi bi-geo-alt-fill me-2"></i>
+									<span style={{ fontSize: '28px' }}>&#127481;&#127469;</span> Thailand Office
+								</h3>
 								<div className="text-start">
 									<p className="fw-bold mb-3">K Energy Save Co., Ltd.</p>
 									<p className="mb-2"><i className="bi bi-building me-2"></i>84 Chaloem Phrakiat Rama 9 Soi 34</p>
@@ -169,7 +172,10 @@ export default function HomePage() {
 						{/* Korea Office */}
 						<div className="col-lg-6">
 							<div className="contact-card">
-								<h3><i className="bi bi-geo-alt-fill me-2"></i>🇰🇷 Korea Office</h3>
+								<h3>
+									<i className="bi bi-geo-alt-fill me-2"></i>
+									<span style={{ fontSize: '28px' }}>&#127472;&#127479;</span> Korea Office
+								</h3>
 								<div className="text-start">
 									<p className="fw-bold mb-3">Zera-Energy</p>
 									<p className="mb-2"><i className="bi bi-building me-2"></i>2F, 16-10, 166beon-gil</p>
