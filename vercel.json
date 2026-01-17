@@ -2,26 +2,5 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "framework": "nextjs",
-  "env": {
-    "INFLUXDB_URL": "@influxdb_url",
-    "INFLUXDB_TOKEN": "@influxdb_token",
-    "INFLUXDB_ORG": "@influxdb_org",
-    "INFLUXDB_BUCKET": "@influxdb_bucket",
-    "MYSQL_HOST": "@mysql_host",
-    "MYSQL_PORT": "@mysql_port",
-    "MYSQL_USER": "@mysql_user",
-    "MYSQL_PASSWORD": "@mysql_password",
-    "MYSQL_DATABASE": "@mysql_database",
-    "MYSQL_USER_HOST": "@mysql_user_host",
-    "MYSQL_USER_PORT": "@mysql_user_port",
-    "MYSQL_USER_USER": "@mysql_user_user",
-    "MYSQL_USER_PASSWORD": "@mysql_user_password",
-    "MYSQL_USER_DATABASE": "@mysql_user_database",
-    "MYSQL_CUSTOMER_HOST": "@mysql_customer_host",
-    "MYSQL_CUSTOMER_PORT": "@mysql_customer_port",
-    "MYSQL_CUSTOMER_USER": "@mysql_customer_user",
-    "MYSQL_CUSTOMER_PASSWORD": "@mysql_customer_password",
-    "MYSQL_CUSTOMER_DATABASE": "@mysql_customer_database"
-  }
+  "framework": "nextjs"
 }
