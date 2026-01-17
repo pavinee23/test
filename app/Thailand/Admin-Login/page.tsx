@@ -243,27 +243,6 @@ export default function AdminLoginPage() {
             {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
           </button>
         </form>
-
-
-
-        <div style={{
-          marginTop: 16,
-          textAlign: 'center'
-        }}>
-          <button
-            onClick={() => router.push('/sites')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#2563eb',
-              fontSize: 14,
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-          >
-            ← กลับสู่หน้าหลัก
-          </button>
-        </div>
       </div>
     </div>
   )
