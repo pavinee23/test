@@ -8,21 +8,35 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}))
     // simple validation
-    const { name, ksave, location } = body || {}
+    const { name, ksave, location, phone } = body || {}
     if (!name || !ksave) return NextResponse.json({ error: 'name and ksave are required' }, { status: 400 })
 
-    // Save to PostgreSQL database FIRST (primary data store)
+    // Save to MySQL database FIRST (primary data store)
     let savedDevice = null
     try {
-      const result = await query(`
-        INSERT INTO devices ("deviceName", "ksaveID", location, status, "createdAt", "updatedAt")
-        VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        RETURNING "deviceID", "deviceName", "ksaveID", location, status, "createdAt", "updatedAt"
-      `, [name, ksave, location || null, 'active'])
+      const result: any = await query(`
+        INSERT INTO devices (deviceName, ksaveID, location, phone, status, U_email, P_email, pass_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        name, 
+        ksave, 
+        location || '', 
+        phone || '', 
+        'OK',
+        '', // U_email - empty string as default
+        '', // P_email - empty string as default
+        ''  // pass_phone - empty string as default
+      ])
 
-      savedDevice = result[0]
+      // Fetch the inserted device
+      const inserted = await query(`
+        SELECT deviceID, deviceName, ksaveID, location, phone, status, created_at, updated_at
+        FROM devices WHERE deviceID = ?
+      `, [result.insertId])
+
+      savedDevice = inserted[0]
     } catch (dbErr: any) {
-      console.error('PostgreSQL insert failed:', dbErr)
+      console.error('MySQL insert failed:', dbErr)
       return NextResponse.json({
         ok: false,
         error: `Database error: ${dbErr?.message || String(dbErr)}`
@@ -79,11 +93,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      machine: savedDevice || { name, ksave, location },
+      machine: savedDevice || { name, ksave, location, phone },
       written: 1,
       influxWritten,
-      postgresWritten: true,
-      note: influxWritten ? 'Machine saved to both PostgreSQL and InfluxDB' : 'Machine saved to PostgreSQL (InfluxDB write failed)'
+      mysqlWritten: true,
+      note: influxWritten ? 'Machine saved to both MySQL and InfluxDB' : 'Machine saved to MySQL (InfluxDB write failed)'
     })
   } catch (e: any) {
     return NextResponse.json({ error: String(e?.message || e) }, { status: 500 })
@@ -92,7 +106,7 @@ export async function POST(req: Request) {
 
 /**
  * GET /api/admin_route/machines
- * Retrieve all machines from PostgreSQL
+ * Retrieve all machines from MySQL
  */
 export async function GET(req: Request) {
   try {
@@ -101,10 +115,10 @@ export async function GET(req: Request) {
     const offset = parseInt(url.searchParams.get('offset') || '0')
 
     const devices = await query(`
-      SELECT "deviceID", "deviceName", "ksaveID", "ipAddress", location, status, "createdAt", "updatedAt"
+      SELECT deviceID, deviceName, ksaveID, ipAddress, location, phone, status, created_at, updated_at
       FROM devices
-      ORDER BY "createdAt" DESC
-      LIMIT $1 OFFSET $2
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
     `, [limit, offset])
 
     const total = await query(`SELECT COUNT(*) as count FROM devices`)
@@ -143,7 +157,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}))
-    const { deviceName, ksaveID, ipAddress, location, status, beforeMeterNo, metricsMeterNo } = body
+    const { deviceName, ksaveID, ipAddress, location, phone, status, beforeMeterNo, metricsMeterNo } = body
 
     if (!deviceName || !ksaveID) {
       return NextResponse.json({
@@ -152,19 +166,24 @@ export async function PUT(req: Request) {
       }, { status: 400 })
     }
 
-    const result = await query(`
+    await query(`
       UPDATE devices SET
-        "deviceName" = $1,
-        "ksaveID" = $2,
-        "ipAddress" = $3,
-        location = $4,
-        status = $5,
-        "beforeMeterNo" = $6,
-        "metricsMeterNo" = $7,
-        "updatedAt" = CURRENT_TIMESTAMP
-      WHERE "deviceID" = $8
-      RETURNING "deviceID", "deviceName", "ksaveID", "ipAddress", location, status, "beforeMeterNo", "metricsMeterNo", "createdAt", "updatedAt"
-    `, [deviceName, ksaveID, ipAddress || null, location || null, status || 'active', beforeMeterNo || null, metricsMeterNo || null, parseInt(deviceID)])
+        deviceName = ?,
+        ksaveID = ?,
+        ipAddress = ?,
+        location = ?,
+        phone = ?,
+        status = ?,
+        beforeMeterNo = ?,
+        metricsMeterNo = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE deviceID = ?
+    `, [deviceName, ksaveID, ipAddress || null, location || null, phone || '', status || 'OK', beforeMeterNo || null, metricsMeterNo || null, parseInt(deviceID)])
+
+    const result = await query(`
+      SELECT deviceID, deviceName, ksaveID, ipAddress, location, phone, status, beforeMeterNo, metricsMeterNo, created_at, updated_at
+      FROM devices WHERE deviceID = ?
+    `, [parseInt(deviceID)])
 
     if (result.length === 0) {
       return NextResponse.json({
@@ -204,22 +223,26 @@ export async function DELETE(req: Request) {
       }, { status: 400 })
     }
 
-    const result = await query(`
-      DELETE FROM devices
-      WHERE "deviceID" = $1
-      RETURNING "deviceID", "deviceName", "ksaveID"
+    // Get device info before deleting
+    const device = await query(`
+      SELECT deviceID, deviceName, ksaveID FROM devices WHERE deviceID = ?
     `, [parseInt(deviceID)])
 
-    if (result.length === 0) {
+    if (device.length === 0) {
       return NextResponse.json({
         ok: false,
         error: 'Device not found'
       }, { status: 404 })
     }
 
+    // Delete the device
+    await query(`
+      DELETE FROM devices WHERE deviceID = ?
+    `, [parseInt(deviceID)])
+
     return NextResponse.json({
       ok: true,
-      deleted: result[0],
+      deleted: device[0],
       message: 'Device deleted successfully'
     })
 
