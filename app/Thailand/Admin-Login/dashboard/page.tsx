@@ -94,7 +94,7 @@ export default function ThailandAdminDashboard() {
           </div>
 
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ fontSize: 13, color: '#374151' }}>{user?.fullname || user?.username || ''}</div>
+            <div style={{ fontSize: 13, color: '#374151' }}>{user?.name || user?.userName || ''}</div>
             <button onClick={() => setLang(lang === 'th' ? 'en' : 'th')} style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer' }}>
               {lang === 'th' ? 'EN' : 'TH'}
             </button>
