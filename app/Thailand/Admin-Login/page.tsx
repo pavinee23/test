@@ -80,9 +80,9 @@ export default function AdminLoginPage() {
           return
         }
       } else {
-        // Fallback: send super/admin users to the global admin main
+        // Fallback: send super/admin users to the Thailand dashboard
         if (data.typeID === 1 || data.typeID === 2) {
-          router.push('/admin/main')
+          router.push('/Thailand/Admin-Login/dashboard')
         } else {
           router.push('/sites')
         }
