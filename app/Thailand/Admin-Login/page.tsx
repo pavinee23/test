@@ -47,9 +47,13 @@ export default function AdminLoginPage() {
       console.log('🔍 Full response data:', JSON.stringify(data))
       console.log('🔍 User site:', userSite, 'typeID:', userTypeID, 'typeID type:', typeof userTypeID)
 
-      // Verify user's site is thailand or admin
-      if (userSite !== 'thailand' && userSite !== 'admin') {
-        console.log('❌ Site check failed:', userSite)
+      // Allow specific republic korea users (pavinee, admin) to access
+      const allowedRepublicKoreaUsers = ['pavinee', 'admin']
+      const isAllowedRepublicKorea = userSite === 'republic korea' && allowedRepublicKoreaUsers.includes(data.username)
+
+      // Verify user's site is thailand, admin, or allowed republic korea user
+      if (userSite !== 'thailand' && userSite !== 'admin' && !isAllowedRepublicKorea) {
+        console.log('❌ Site check failed:', userSite, 'username:', data.username)
         setError('บัญชีนี้ไม่มีสิทธิ์เข้าถึงระบบ Thailand')
         return
       }
@@ -67,38 +71,39 @@ export default function AdminLoginPage() {
 
       console.log('🔍 About to redirect - site:', userSite, 'typeID:', userTypeID)
 
-      // Redirect based on typeID and site - allow specific Thailand users only
-      if (userSite === 'thailand' || userSite === 'admin') {
-        console.log('✅ Site verified as thailand/admin')
-        if (userTypeID === 1 || userTypeID === 2) {
-          console.log('✅ Redirecting to Thailand dashboard (Admin)')
-          router.push('/Thailand/Admin-Login/dashboard')
-          return
-        } else if (userTypeID === 0 && userSite === 'thailand') {
-          // Only allow specific username 'user' to access dashboard
-          if (data.username === 'user') {
-            console.log('✅ Allowing Thailand user "user" access to dashboard')
-            router.push('/Thailand/Admin-Login/dashboard')
-            return
-          } else {
-            console.log('⚠️ User not authorized for dashboard - redirecting to sites')
-            router.push('/sites')
-            return
-          }
-        } else {
-          console.log('⚠️ Not authorized - typeID:', userTypeID, 'site:', userSite)
-          router.push('/sites')
-          return
-        }
-      } else {
-        console.log('⚠️ Site not thailand/admin, using fallback')
-        // Fallback: send super/admin users to the Thailand dashboard
-        if (userTypeID === 1 || userTypeID === 2) {
-          router.push('/Thailand/Admin-Login/dashboard')
-        } else {
-          router.push('/sites')
-        }
+      // Redirect based on typeID and site
+      // 1. Admin users (typeID 1,2) always go to dashboard
+      if (userTypeID === 1 || userTypeID === 2) {
+        console.log('✅ Redirecting to Thailand dashboard (Admin)')
+        router.push('/Thailand/Admin-Login/dashboard')
+        return
       }
+
+      // 2. Allow specific users to access dashboard
+      if (userTypeID === 0) {
+        // pavinee and admin (republic korea) - full access to dashboard
+        if (isAllowedRepublicKorea) {
+          console.log('✅ Allowing Republic Korea user full access to dashboard')
+          router.push('/Thailand/Admin-Login/dashboard')
+          return
+        }
+
+        // user (thailand) - access to dashboard
+        if (userSite === 'thailand' && data.username === 'user') {
+          console.log('✅ Allowing Thailand user "user" access to dashboard')
+          router.push('/Thailand/Admin-Login/dashboard')
+          return
+        }
+
+        // testuser and other users - redirect to sites
+        console.log('⚠️ User not authorized for dashboard - redirecting to sites')
+        router.push('/sites')
+        return
+      }
+
+      // Fallback
+      console.log('⚠️ Fallback - redirecting to sites')
+      router.push('/sites')
     } catch (e: any) {
       setError(e.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ')
     } finally {
