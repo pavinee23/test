@@ -1,28 +1,37 @@
 import mysql from 'mysql2/promise'
 
-// Debug: Log environment variables
-console.log('🔍 MySQL Connection Config:', {
-  host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST,
-  port: process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT,
-  user: process.env.MYSQL_USER,
-  database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE,
-  password_set: !!(process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD)
-})
-
-// Create MySQL connection pool for user database
+// Create MySQL connection pool for user database (lazy initialization)
 // Support both MYSQL_* and MYSQL_USER_* environment variables
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST || 'localhost',
-  port: parseInt(process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT || '3307'),
-  user: process.env.MYSQL_USER || process.env.MYSQL_USER_USER || 'ksystem',
-  password: process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD || 'Ksave2025Admin',
-  database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE || 'ksystem',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  timezone: '+00:00',
-  connectTimeout: 10000 // 10 second timeout for Vercel
-})
+let pool: mysql.Pool | null = null
+
+function getPool() {
+  if (!pool) {
+    // Debug: Log environment variables only when pool is created
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('🔍 MySQL Connection Config:', {
+        host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST,
+        port: process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT,
+        user: process.env.MYSQL_USER,
+        database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE,
+        password_set: !!(process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD)
+      })
+    }
+
+    pool = mysql.createPool({
+      host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST || 'localhost',
+      port: parseInt(process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT || '3307'),
+      user: process.env.MYSQL_USER || process.env.MYSQL_USER_USER || 'ksystem',
+      password: process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD || 'Ksave2025Admin',
+      database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE || 'ksystem',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      timezone: '+00:00',
+      connectTimeout: 10000 // 10 second timeout for Vercel
+    })
+  }
+  return pool
+}
 
 // Note: Connection test removed for serverless compatibility
 // Connections are created on-demand when needed
@@ -36,7 +45,7 @@ const pool = mysql.createPool({
 export async function queryUser(sql: string, values?: any[]): Promise<any[]> {
   let connection
   try {
-    connection = await pool.getConnection()
+    connection = await getPool().getConnection()
     const [rows] = await connection.execute(sql, values)
     return rows as any[]
   } catch (error: any) {
@@ -121,7 +130,7 @@ export async function authenticateUser(
     LIMIT 1
   `
 
-  const connection = await pool.getConnection()
+  const connection = await getPool().getConnection()
 
   try {
     const [rows] = await connection.execute(sql, [username])
@@ -178,7 +187,7 @@ export async function getUserById(userId: number): Promise<any | null> {
     LIMIT 1
   `
 
-  const connection = await pool.getConnection()
+  const connection = await getPool().getConnection()
 
   try {
     const [rows] = await connection.execute(sql, [userId])
@@ -209,7 +218,7 @@ export async function recordLoginLog(userId: number, pageName: string = 'home'):
     LIMIT 1
   `
 
-  const connection = await pool.getConnection()
+  const connection = await getPool().getConnection()
 
   try {
     await connection.execute(sql, [userId, pageName, userId])
@@ -223,5 +232,5 @@ export async function recordLoginLog(userId: number, pageName: string = 'home'):
   }
 }
 
-// Export pool for advanced usage
-export { pool }
+// Export pool getter for advanced usage
+export { getPool }
