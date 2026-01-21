@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
 
       console.log('🔍 About to redirect - site:', userSite, 'typeID:', userTypeID)
 
-      // Redirect based on typeID and site - allow Thailand users (typeID 0)
+      // Redirect based on typeID and site - allow specific Thailand users only
       if (userSite === 'thailand' || userSite === 'admin') {
         console.log('✅ Site verified as thailand/admin')
         if (userTypeID === 1 || userTypeID === 2) {
@@ -75,9 +75,16 @@ export default function AdminLoginPage() {
           router.push('/Thailand/Admin-Login/dashboard')
           return
         } else if (userTypeID === 0 && userSite === 'thailand') {
-          console.log('✅ Allowing Thailand user (typeID 0) access to dashboard')
-          router.push('/Thailand/Admin-Login/dashboard')
-          return
+          // Only allow specific username 'user' to access dashboard
+          if (data.username === 'user') {
+            console.log('✅ Allowing Thailand user "user" access to dashboard')
+            router.push('/Thailand/Admin-Login/dashboard')
+            return
+          } else {
+            console.log('⚠️ User not authorized for dashboard - redirecting to sites')
+            router.push('/sites')
+            return
+          }
         } else {
           console.log('⚠️ Not authorized - typeID:', userTypeID, 'site:', userSite)
           router.push('/sites')
