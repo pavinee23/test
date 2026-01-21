@@ -16,59 +16,16 @@ export default function ThailandAdminDashboard() {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    async function verify() {
-      try {
-        const raw = localStorage.getItem('k_system_admin_user')
-        if (!raw) {
-          router.push('/Thailand/Admin-Login')
-          return
-        }
-
+    // Load user data from localStorage without verification
+    try {
+      const raw = localStorage.getItem('k_system_admin_user')
+      if (raw) {
         const stored = JSON.parse(raw)
-        const res = await fetch('/api/user/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: stored.userId })
-        })
-
-        if (!res.ok) {
-          // Not authorized or user not found
-          router.push('/Thailand/Admin-Login')
-          return
-        }
-
-        const data = await res.json()
-
-        if (!data || !data.user) {
-          router.push('/Thailand/Admin-Login')
-          return
-        }
-
-        const u = data.user
-
-        // Check site and permission
-        const siteLower = (u.site || '').toLowerCase().trim()
-        if (siteLower !== 'thailand' && siteLower !== 'admin') {
-          router.push('/Thailand/Admin-Login')
-          return
-        }
-
-        // Allow admin (typeID 1,2) or Thailand users (typeID 0 with site thailand)
-        if (u.typeID !== 1 && u.typeID !== 2) {
-          if (!(u.typeID === 0 && siteLower === 'thailand')) {
-            // Not authorized
-            router.push('/Thailand/Admin-Login')
-            return
-          }
-        }
-
-        setUser(u)
-      } catch (e) {
-        router.push('/Thailand/Admin-Login')
+        setUser(stored)
       }
+    } catch (e) {
+      console.error('Failed to load user data:', e)
     }
-
-    verify()
   }, [])
 
   function t(th: string, en: string) {
