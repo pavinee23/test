@@ -2,24 +2,26 @@ import mysql from 'mysql2/promise'
 
 // Debug: Log environment variables
 console.log('🔍 MySQL Connection Config:', {
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
+  host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST,
+  port: process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT,
   user: process.env.MYSQL_USER,
-  database: process.env.MYSQL_DATABASE,
-  password_set: !!process.env.MYSQL_PASSWORD
+  database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE,
+  password_set: !!(process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD)
 })
 
 // Create MySQL connection pool for user database
+// Support both MYSQL_* and MYSQL_USER_* environment variables
 const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || 'localhost',
-  port: parseInt(process.env.MYSQL_PORT || '3307'),
-  user: process.env.MYSQL_USER || 'ksystem',
-  password: process.env.MYSQL_PASSWORD || 'Ksave2025Admin',
-  database: process.env.MYSQL_DATABASE || 'ksystem',
+  host: process.env.MYSQL_HOST || process.env.MYSQL_USER_HOST || 'localhost',
+  port: parseInt(process.env.MYSQL_PORT || process.env.MYSQL_USER_PORT || '3307'),
+  user: process.env.MYSQL_USER || process.env.MYSQL_USER_USER || 'ksystem',
+  password: process.env.MYSQL_PASSWORD || process.env.MYSQL_USER_PASSWORD || 'Ksave2025Admin',
+  database: process.env.MYSQL_DATABASE || process.env.MYSQL_USER_DATABASE || 'ksystem',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  timezone: '+00:00'
+  timezone: '+00:00',
+  connectTimeout: 10000 // 10 second timeout for Vercel
 })
 
 // Note: Connection test removed for serverless compatibility
