@@ -64,14 +64,18 @@ export default function AdminLoginPage() {
       console.log('🔍 About to redirect - site:', userSite, 'typeID:', data.typeID)
 
       // Redirect based on typeID and site
-      // For Thailand/Admin site logins, send to the new Thailand dashboard
+      // For Thailand/Admin site logins, allow access to Thailand users
       if (userSite === 'thailand' || userSite === 'admin') {
         if (data.typeID === 1 || data.typeID === 2) {
-          console.log('✅ Redirecting to Thailand dashboard')
+          console.log('✅ Redirecting to Thailand dashboard (Admin)')
+          router.push('/Thailand/Admin-Login/dashboard')
+          return
+        } else if (data.typeID === 0 && userSite === 'thailand') {
+          console.log('✅ Allowing Thailand user access to dashboard')
           router.push('/Thailand/Admin-Login/dashboard')
           return
         } else {
-          console.log('⚠️ Not admin - typeID:', data.typeID)
+          console.log('⚠️ Not authorized - typeID:', data.typeID)
           router.push('/sites')
           return
         }
