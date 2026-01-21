@@ -18,13 +18,13 @@ export async function POST(req: NextRequest) {
     // Validate input
     if (!username || !password) {
       return NextResponse.json({
-        error: 'กรุณากรอก Username และ Password'
+        error: 'Please enter Username and Password'
       }, { status: 400 })
     }
 
     if (!site) {
       return NextResponse.json({
-        error: 'กรุณากรอก Site / Branch'
+        error: 'Please enter Site / Branch'
       }, { status: 400 })
     }
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       if (users.length === 0) {
         console.log('❌ User not found:', username)
         return NextResponse.json({
-          error: 'Username, Password หรือ Site ไม่ถูกต้อง'
+          error: 'Invalid Username, Password, or Site'
         }, { status: 401 })
       }
 
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       if (userRecord.password !== password) {
         console.log('❌ Invalid password for user:', username)
         return NextResponse.json({
-          error: 'Username, Password หรือ Site ไม่ถูกต้อง'
+          error: 'Invalid Username, Password, or Site'
         }, { status: 401 })
       }
 
@@ -82,13 +82,13 @@ export async function POST(req: NextRequest) {
         if (userRecord.site.toLowerCase() !== site.toLowerCase()) {
           console.log('❌ Site mismatch:', { provided: site, expected: userRecord.site })
           return NextResponse.json({
-            error: 'Username, Password หรือ Site ไม่ถูกต้อง'
+            error: 'Invalid Username, Password, or Site'
           }, { status: 401 })
         }
       } else if (site && !userRecord.site) {
         console.log('❌ User has no site but site is required')
         return NextResponse.json({
-          error: 'Username, Password หรือ Site ไม่ถูกต้อง'
+          error: 'Invalid Username, Password, or Site'
         }, { status: 401 })
       }
 
