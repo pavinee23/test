@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
     // Validate site - only allow "thailand" or "admin"
     const siteLower = site.toLowerCase().trim()
     if (siteLower !== 'thailand' && siteLower !== 'admin') {
-      setError('สิทธิ์การเข้าถึงสำหรับ Site Thailand และ Admin เท่านั้น')
+      setError('Access allowed only for Thailand or Admin sites')
       setLoading(false)
       return
     }
@@ -36,13 +36,58 @@ export default function AdminLoginPage() {
       console.log('🔍 Login response:', data)
 
       if (!res.ok || data.error) {
-        setError(data.error || 'เข้าสู่ระบบไม่สำเร็จ')
+        setError(data.error || 'Login failed')
         return
       }
 
       // Check user's site from response data
       const userSite = (data.site || '').toLowerCase().trim()
       const userTypeID = parseInt(data.typeID) // Convert to number
+
+      // Show success notification
+      try {
+        const toast = document.createElement('div')
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+          z-index: 9999;
+          font-family: system-ui, -apple-system, sans-serif;
+          font-size: 14px;
+          animation: slideIn 0.3s ease-out;
+        `
+        toast.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 24px;">✅</div>
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Login Successful!</div>
+              <div style="font-size: 13px; opacity: 0.95;">Welcome ${data.username} from ${userSite}</div>
+            </div>
+          </div>
+        `
+        document.body.appendChild(toast)
+
+        // Add animation
+        const style = document.createElement('style')
+        style.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+        `
+        document.head.appendChild(style)
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          toast.style.animation = 'slideIn 0.3s ease-out reverse'
+          setTimeout(() => toast.remove(), 300)
+        }, 3000)
+      } catch(_) {}
 
       console.log('🔍 Full response data:', JSON.stringify(data))
       console.log('🔍 User site:', userSite, 'typeID:', userTypeID, 'typeID type:', typeof userTypeID)
@@ -53,8 +98,8 @@ export default function AdminLoginPage() {
 
       // Verify user's site is thailand, admin, or allowed republic korea user
       if (userSite !== 'thailand' && userSite !== 'admin' && !isAllowedRepublicKorea) {
-        console.log('❌ Site check failed:', userSite, 'username:', data.username)
-        setError('บัญชีนี้ไม่มีสิทธิ์เข้าถึงระบบ Thailand')
+        console.log('❌ Dashboard check failed:', userSite, 'username:', data.username)
+        setError('This account is not authorized to access the Thailand system')
         return
       }
 
@@ -69,7 +114,7 @@ export default function AdminLoginPage() {
       }))
       localStorage.setItem('k_system_admin_token', data.token || '')
 
-      console.log('🔍 About to redirect - site:', userSite, 'typeID:', userTypeID)
+      console.log('🔍 About to redirect - dashboard:', userSite, 'typeID:', userTypeID)
 
       // Redirect based on typeID and site
       // 1. Admin users (typeID 1,2) always go to dashboard
@@ -96,16 +141,16 @@ export default function AdminLoginPage() {
         }
 
         // testuser and other users - redirect to sites
-        console.log('⚠️ User not authorized for dashboard - redirecting to sites')
-        router.push('/sites')
+        console.log('⚠️ User not authorized for dashboard - redirecting to dashboard')
+        router.push('/Thailand/Admin-Login/dashboard')
         return
       }
 
       // Fallback
-      console.log('⚠️ Fallback - redirecting to sites')
-      router.push('/sites')
+      console.log('⚠️ Fallback - redirecting to dashboard')
+      router.push('/Thailand/Admin-Login/dashboard')
     } catch (e: any) {
-      setError(e.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ')
+      setError(e.message || 'Connection error occurred')
     } finally {
       setLoading(false)
     }
@@ -140,10 +185,10 @@ export default function AdminLoginPage() {
             K Energy Save Co., Ltd.
           </div>
           <div style={{ fontSize: 16, color: '#6b7280', marginBottom: 4 }}>
-            บริษัท เค เอนเนอร์ยี่ เซฟ จำกัด
+            K Energy Save Co., Ltd.
           </div>
           <div style={{ fontSize: 14, color: '#9ca3af', marginTop: 4 }}>
-            สาขาประเทศไทย
+            Thailand Branch
           </div>
         </div>
 
@@ -156,7 +201,7 @@ export default function AdminLoginPage() {
           textAlign: 'center'
         }}>
           <h2 style={{ margin: 0, color: '#fff', fontSize: 24, fontWeight: 700 }}>
-            ระบบการจัดการ
+            Management System
           </h2>
           <div style={{ fontSize: 14, color: '#e5e7eb', marginTop: 4 }}>
             Management System Login
@@ -261,7 +306,7 @@ export default function AdminLoginPage() {
               marginTop: 8
             }}
           >
-            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>

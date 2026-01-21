@@ -48,11 +48,64 @@ export default function UserLogin() {
 				// Show success animation
 				setSuccess(true)
 
-			// Wait for animation then redirect to sites page
+			// Wait for animation then redirect: Thailand users -> Admin dashboard, others -> sites
 			setTimeout(() => {
-				router.push('/sites')
-				}, 1500)
-				return
+				try {
+					const userSite = (data && data.site || '').toString().toLowerCase().trim()
+					// Show success notification
+					try {
+						const toast = document.createElement('div')
+						toast.style.cssText = `
+							position: fixed;
+							top: 20px;
+							right: 20px;
+							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							color: white;
+							padding: 16px 24px;
+							border-radius: 12px;
+							box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+							z-index: 9999;
+							font-family: system-ui, -apple-system, sans-serif;
+							font-size: 14px;
+							animation: slideIn 0.3s ease-out;
+						`
+						toast.innerHTML = `
+							<div style="display: flex; align-items: center; gap: 12px;">
+								<div style="font-size: 24px;">✅</div>
+								<div>
+									<div style="font-weight: 600; margin-bottom: 4px;">Login Successful!</div>
+									<div style="font-size: 13px; opacity: 0.95;">Welcome ${data.username} from ${userSite}</div>
+								</div>
+							</div>
+						`
+						document.body.appendChild(toast)
+
+						// Add animation
+						const style = document.createElement('style')
+						style.textContent = `
+							@keyframes slideIn {
+								from { transform: translateX(400px); opacity: 0; }
+								to { transform: translateX(0); opacity: 1; }
+							}
+						`
+						document.head.appendChild(style)
+
+						// Auto remove after 1.2 seconds (before redirect at 1.5s)
+						setTimeout(() => {
+							toast.style.animation = 'slideIn 0.3s ease-out reverse'
+							setTimeout(() => toast.remove(), 300)
+						}, 1200)
+					} catch(_) {}
+					if (userSite === 'thailand') {
+						router.push('/Thailand/Admin-Login/dashboard')
+					} else {
+						router.push('/Admin-Login')
+					}
+				} catch (err) {
+					router.push('/Admin-Login')
+				}
+			}, 1500)
+			return
 			}
 
 			throw new Error('Invalid response from server')
