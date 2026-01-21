@@ -2,8 +2,9 @@ import React from "react"
 import './styles/globals.css'
 import Script from 'next/script'
 import { headers } from 'next/headers'
+import type { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: "K Energy Save - ENERGY YOU CAN TRUST",
 	description: "Advanced power-saving technology with proven results. Cut your Electric Bill from day one!",
 }
